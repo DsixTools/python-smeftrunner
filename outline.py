@@ -10,19 +10,21 @@ import numpy as np
 
 #I want to write a class particle containing all the information of the particle
 
+      
 class particle:
+    len_G=5
+    
     def __init__(self, name):
         self.name = name
-        self.G = []
-        self.Gh=self.G.getH()    #maybe problematic
-        self.WCs = []
+        self.G = np.matrix(np.empty([particle.len_G,particle.len_G]))
+        self.Gh = self.G.getH() #problematic
         
     def add_G(self,G):
-        self.G.append(G)
+        self.G=G
         
-    def add_WC(self,WC):
-        self.WC.append(WC)
-
+class WW(particle): #wechselwirkung
+    def __init__(self, particle2, WC):
+        
 
 
 

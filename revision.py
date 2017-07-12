@@ -7,11 +7,11 @@ This is a temporary script file.
 
 import re
 
-#f = open("beta.txt","r")
-#f_py = open("beta_py.py", "w")
+f = open("beta.txt","r")
+f_py = open("beta_py.py", "w")
 
-f = open("Parameter.txt","r")
-f_py = open("Parameter.py", "w")
+#f = open("Parameter.txt","r")
+#f_py = open("Parameter.py", "w")
 
 f_py.write("#this file was formed from 'revision.py'\n\n\n")
 
@@ -31,6 +31,8 @@ while line:
     line=re.sub(r'(G_[ude])[h]', r'\1.getH()', line)        #Conjugate transpose of G
     line=re.sub(r'TrC(\w+)',r'np.trace(WC["\1"])', line)    #trace from WC
     line=re.sub(r'Tr((\w+_\w+(.getH\(\))?@)+)', r'np.trace(\1)', line)    #trace function 
+    
+    #progressing: einsum function
     #line=re.sub(r'@([)|\+|-])', r'\1', line)               #remove the odd @ 
     
     

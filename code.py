@@ -27,7 +27,7 @@ Eta3=3*np.trace(WC["CurlyPhiq1"]@G_d@G_d.getH())-3*np.trace(WC["CurlyPhiq1"]@G_u
 Eta4=12*np.trace(WC["CurlyPhiq1"]@G_d@G_d.getH())-12*np.trace(WC["CurlyPhiq1"]@G_u@G_u.getH())+12*np.trace(WC["CurlyPhiu"]@G_u.getH()@G_u)-12*np.trace(WC["CurlyPhid"]@G_d.getH()@G_d)+6*(np.trace(WC["CurlyPhiud"]@G_d.getH()@G_u)+c*np.trace(WC["CurlyPhiud"]@G_d.getH()@G_u))+4*np.trace(WC["CurlyPhil1"]@G_e@G_e.getH())-4*np.trace(WC["CurlyPhie"]@G_e.getH()@G_e)
 Eta5=j*3/2*(np.trace(G_d@WC["dCurlyPhi"].getH())-c*np.trace(G_d@WC["dCurlyPhi"].getH()))-j*3/2*(np.trace(G_u@WC["uCurlyPhi"].getH())-c*np.trace(G_u@WC["uCurlyPhi"].getH()))+j*1/2*(np.trace(G_e@WC["eCurlyPhi"].getH())-c*np.trace(G_e@WC["eCurlyPhi"].getH()))
 
-GammaH=np.trace(3*G_u@G_uh+3*G_d@G_dh+G_e@G_eh)
+GammaH=np.trace(3*G_u@G_u.getH()+3*G_d@G_d.getH()+G_e@G_e.getH())
 Gammaq=1/2*(G_u@G_u.getH()+G_d@G_d.getH())
 Gammau=G_u.getH()@G_u
 Gammad=G_d.getH()@G_d

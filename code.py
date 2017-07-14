@@ -7,7 +7,6 @@ Created on Thu Jun 29 14:38:21 2017
 
 import numpy as np
 
-#np.einsum is not so useful if the matrix element must be multiplied with different numbers. I will try to write a function myself...
 
 
 #Parameters

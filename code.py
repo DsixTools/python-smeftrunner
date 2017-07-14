@@ -7,8 +7,6 @@ Created on Thu Jun 29 14:38:21 2017
 
 import numpy as np
 
-def einsum(a)
-
 
 
 #Parameters

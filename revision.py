@@ -35,17 +35,33 @@ while line:
     line = re.sub(r'(G_[ued])@c', r'np.conj(\1)@', line)                             #conjugate of G (*)
     line = re.sub(r'C([a-zA-Z]+\d?)\*?((np.conj\()?G_[ued]\)?)@([rpts]{4}),([rpts]{2})', r'np.einsum("\4,\5", WC["\1"], \2)', line)   #einsum function for G
     line = re.sub(r'(WC\["[a-zA-Z0-9]+)c"\]', r'np.conj(\1"])', line)                #conjugate of WC (*)
+    line = re.sub(r'C([a-zA-Z0-9]+)\*?c', r'np.conj(WC["\1"])', line)                #conjugate of WC (*)
     line = re.sub(r'WC\["([a-zA-Z0-9]+)(G_[ued])"\]\).getH\(\)(@G_[ued])?(@G_[ued].getH\(\))?', r'WC["\1"]@\2.getH()\3\4)', line)  #fix the odd expression
     line = re.sub(r'([\+|\-])([0-9]\*)?c([a-zA-Z0-9_@"\[\].\(\)]+)([\+|\-])', r'\1\2np.conj(\3)\4', line)  #deal with c.c. (odd number terms)
     line = re.sub(r'([\+|\-])([0-9]\*)?c([a-zA-Z0-9_@"\[\].\(\)]+)([\+|\-])', r'\1\2np.conj(\3)\4', line)  #deal with c.c. (even number terms)
     line = re.sub(r'C([a-zA-Z0-9]+)\*?(G_[eud](.getH\(\))?)@(G_[eud](.getH\(\))?)@([rpts]{4}),([rpts]{2})', r'np.einsum("\6,\7", WC["\1"], \2@\4)', line)    #einsum function for G@G
-    line = re.sub(r'C([a-zA-Z0-9]+)\*?(G_[eud](.getH\(\))?)@(G_[eud](.getH\(\))?)@(G_[eud](.getH\(\))?)@([rpts]{4}),([rpts]{2})', r'np.einsum("\8,\9", WC["\1"], \2@\4@\6)', line)   #einsum function for G@G@G
+    line = re.sub(r'C([a-zA-Z0-9]+)\*?(G_[eud](.getH\(\))?)@(G_[eud](.getH\(\))?)@(G_[eud](.getH\(\))?)@([rptswv]{4}),([rptswv]{2})', r'np.einsum("\8,\9", WC["\1"], \2@\4@\6)', line)   #einsum function for G@G@G
     line = re.sub(r'C([a-zA-Z0-9]+)\*?(G_[ued])', r'WC["\1"]@\2', line)   #WC@G
     line = re.sub(r'@C([a-zA-Z0-9]+)([\+\-\)])', r'@WC["\1"]\2', line)    #G@WC
     line = re.sub(r'(Gamma[qudle])C([a-zA-Z0-9]+)([\+\-\)])', r'\1@WC["\2"]\3', line)   #Gamma@WC
     line = re.sub(r'C([a-zA-Z0-9]+)(Gamma[qudle])', r'WC["\1"]@\2', line)         #WC@GGamma
     line = re.sub(r'C([a-zA-Z0-9]+)\*?([rstp]{4})', r'np.einsum("\2", WC["\1"])', line)   #einsum for WC
-    #line = re.sub(r'([\+\-=])([a-zA-Z0-9_@"\[\].\*/\+\-]+)\*I3', r'\1np.multiply((\2), np.identity(3))', line)   #I3 -> kronecker delta
+    line = re.sub(r'C([a-zA-Z0-9]+)\*?Delta_([stprwv]{2},[prstwv]{2})', r'np.einsum("\2", WC["\1"], I3)', line)    #2DWC*kronecker delta
+    line = re.sub(r'C([a-zA-Z0-9]+)\*?Delta_([stprwv]{4},[prwvst]{2})', r'np.einsum("\2", WC["\1"], I3)', line)     #2DWC*kronecker delta
+    # for 4D WCs
+    line = re.sub(r'(G_[eud](.getH\(\))?@G_[eud](.getH\(\))?)@xC([a-zA-Z0-9]+)\*?([prstwv]{2},[prstwv]{2})', r'np.einsum("\5", \1, WC["\4"])', line)  #einsum
+    line = re.sub(r'(G_[eud](.getH\(\))?@G_[eud](.getH\(\))?)@xC([a-zA-Z0-9]+)\*?([prstwv]{4},[prstwv]{2})', r'np.einsum("\5", \1, WC["\4"])', line) 
+    line = re.sub(r'(G_[eud](.getH\(\))?@G_[eud](.getH\(\))?)@x(np.conj\(WC["[a-zA-Z0-9]+"]\))([prstwv]{2},[prstwv]{2})', r'np.einsum("\5", \1, \4)', line)
+    line = re.sub(r'((np.conj\()?G_[ued]\)?)@((np.conj\()?G_[ued]\)?)@C([a-zA-Z0-9]+)\*?([prstwv]{2},[prstwv]{2},[prstwv]{4})', r'np.einsum("\6", \1, \3, WC["\5"])', line)
+    line = re.sub(r'((np.conj\()?G_[ued]\)?)@((np.conj\()?G_[ued]\)?)@(np.conj\(WC\["[a-zA-Z0-9]+"\]\))([prstwv]{2},[prstwv]{2},[prstwv]{4})', r'np.einsum("\6", \1, \3, \5)', line)
+    line = re.sub(r'(Gamma[qudle])C([a-zA-Z0-9]+)\*?([prstwv]{2},[prstwv]{4})', r'np.einsum("\3", \1, WC["\2"])', line)
+    line = re.sub(r'(WC\["[a-zA-Z0-9]+"\])@(Gamma[qudle])([prstwv]{4},[prstwv]{2})', r'np.einsum("\3", \1, \2)', line)
+    line = re.sub(r'C([a-zA-Z0-9]+)\*?(Gamma[qudle])([prstwv]{4},[prstwv]{2})', r'np.einsum("\3", WC["\1"], \2)', line)
+    line = re.sub(r'((np.conj\()?G_[due]\)?)@(Xi[edu])([prstwv]{2},[prstwv]{2})', r'np.einsum("\4", \1, \3)', line)
+    line = re.sub(r'((np.conj\()?G_[due]\)?)@(Xi[edu])c([prstwv]{2},[prstwv]{2})', r'np.einsum("\4", \1, np.conj(\3))', line)
+    line = re.sub(r'(WC\["[a-zA-Z0-9]+"\])@(G_[ued])@([prstwv]{2},[prstwv]{2})', r'np.einsum("\3", \1, \2)', line)
+    line = re.sub(r'(G_[deu](.getH\(\))?@G_[deu](.getH\(\))?)@C([a-zA-Z0-9]+)\*?([prstwv]{2},[prstwv]{4})', r'np.einsum("\5", \1, WC["\4"])', line)
+    
     
     line = re.sub(r'@([)|\+|\-|;])', r'\1', line)               #remove the odd @ 
     line = re.sub(r'\)\*(G_[ude])', r')@\1', line)             #odd * in matrix multiplication    

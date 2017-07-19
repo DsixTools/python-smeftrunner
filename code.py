@@ -48,7 +48,7 @@ Xiu=2*(np.einsum("prst,rs", WC["qu1"], G_u)+4/3*np.einsum("prst,rs", WC["qu8"], 
 Beta = {}
 WC = {}
 
-#equations of beta functions
+#equations of beta functions N=74
 Beta["g"]=-19/6*g**3-8*g*m**2/HIGHSCALE**2*WC["CurlyPhiW"]
 
 
@@ -269,3 +269,4 @@ Beta["qqql"]=-(3*g**2+1/3*gp**2+4*gs**2)*np.einsum("prst", WC["qqql"])-4*g**2*(n
 
 
 Beta["duue"]=-(2*gp**2+4*gs**2)*np.einsum("prst", WC["duue"])-20/3*gp**2*np.einsum("psrt", WC["duue"])+4*np.einsum("ws,vt,prwv", G_u, G_e, WC["duql"])-8*np.einsum("vp,wr,vwst", G_d, G_u, WC["qque"])+np.einsum("vp,vrst", G_d.getH()@G_d, WC["duue"])+np.einsum("vr,pvst", G_u.getH()@G_u, WC["duue"])+np.einsum("vs,prvt", G_u.getH()@G_u, WC["duue"])+np.einsum("vt,prsv", G_e.getH()@G_e, WC["duue"])
+

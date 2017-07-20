@@ -22,6 +22,14 @@ Lambda
 I3 = np.identity(3)
 
 
+
+#Beta function, WC as 2 dictionaries
+Beta = {}
+WC = {}
+
+
+
+
 #Functions previous defined...  #c.c.   # i in eta5
 Eta1=(3*np.trace(WC["uCurlyPhi"]@G_u.getH())+3*np.trace(WC["dCurlyPhi"]@G_d.getH())+np.trace(WC["eCurlyPhi"]@G_e.getH())+3*np.conj(np.trace(WC["uCurlyPhi"]@G_u.getH()))+3*np.conj(np.trace(WC["dCurlyPhi"]@G_d.getH()))+np.conj(np.trace(WC["eCurlyPhi"]@G_e.getH())))/2
 Eta2=-6*np.trace(WC["CurlyPhiq3"]@G_u@G_u.getH())-6*np.trace(WC["CurlyPhiq3"]@G_d@G_d.getH())-2*np.trace(WC["CurlyPhil3"]@G_e@G_e.getH())+3*(np.trace(WC["CurlyPhiud"]@G_d.getH()@G_u)+np.conj(np.trace(WC["CurlyPhiud"]@G_d.getH()@G_u)))
@@ -43,10 +51,6 @@ Xiu=2*(np.einsum("prst,rs", WC["qu1"], G_u)+4/3*np.einsum("prst,rs", WC["qu8"], 
 
 
 
-
-#Beta function, WC as 2 dictionaries
-Beta = {}
-WC = {}
 
 #equations of beta functions N=74
 Beta["g"]=-19/6*g**3-8*g*m**2/HIGHSCALE**2*WC["CurlyPhiW"]

@@ -6,7 +6,8 @@ import json
 
 rpar = json.load(open('random_par.json', 'r'))
 rwc = json.load(open('random_wc.json', 'r'))
-betas = json.load(open('betas.json', 'r'))
+betas_re = json.load(open('betas_re.json', 'r'))
+betas_im = json.load(open('betas_im.json', 'r'))
 
 g, gp, gs, Lambda, m2 = rpar[:5]
 Gu = np.array(rpar[5]) + 1j*np.array(rpar[6])
@@ -31,8 +32,12 @@ class TestBeta(unittest.TestCase):
     def test_beta(self):
         my_beta = beta(g, gp, gs, m2, Lambda, Gu, Gd, Ge, HIGHSCALE, WC)
         for i, n in enumerate(WC0):
-            self.assertAlmostEqual(betas[0][i]/my_beta[n].real, 1, places=5)
+            self.assertAlmostEqual(betas_re[0][i]/my_beta[n].real, 1, places=4)
         for i, n in enumerate(WC2):
-            npt.assert_array_almost_equal(betas[1][i]/my_beta[n].real, np.ones((3,3)), decimal=5)
+            npt.assert_array_almost_equal(betas_re[1][i]/my_beta[n].real, np.ones((3,3)), decimal=4)
         for i, n in enumerate(WC4):
-            npt.assert_array_almost_equal(betas[2][i]/my_beta[n].real, np.ones((3,3,3,3)), decimal=2)
+            npt.assert_array_almost_equal(betas_re[2][i]/my_beta[n].real, np.ones((3,3,3,3)), decimal=2)
+        for i, n in enumerate(WC2):
+            npt.assert_array_almost_equal(betas_im[1][i]/my_beta[n].imag, np.ones((3,3)), decimal=4)
+        for i, n in enumerate(WC4):
+            npt.assert_array_almost_equal(betas_im[2][i]/my_beta[n].imag, np.ones((3,3,3,3)), decimal=2)

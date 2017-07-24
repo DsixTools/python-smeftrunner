@@ -1,91 +1,38 @@
 import unittest
 import numpy as np
+import numpy.testing as npt
 from beta import beta
+import json
+
+rpar = json.load(open('random_par.json', 'r'))
+rwc = json.load(open('random_wc.json', 'r'))
+betas = json.load(open('betas.json', 'r'))
+
+g, gp, gs, Lambda, m2 = rpar[:5]
+Gu = np.array(rpar[5]) + 1j*np.array(rpar[6])
+Gd = np.array(rpar[7]) + 1j*np.array(rpar[8])
+Ge = np.array(rpar[9]) + 1j*np.array(rpar[10])
+HIGHSCALE = 1000
+
+WC0 = ["G", "Gtilde", "W", "Wtilde", "CurlyPhi", "CurlyPhiEmptySquare", "CurlyPhiD", "CurlyPhiG", "CurlyPhiB", "CurlyPhiW", "CurlyPhiWB", "CurlyPhiGtilde", "CurlyPhiBtilde", "CurlyPhiWtilde", "CurlyPhiWtildeB"]
+WC2 = ["uCurlyPhi", "dCurlyPhi", "eCurlyPhi", "eW", "eB", "uG", "uW", "uB", "dG", "dW", "dB", "CurlyPhil1", "CurlyPhil3", "CurlyPhie", "CurlyPhiq1", "CurlyPhiq3", "CurlyPhiu", "CurlyPhid", "CurlyPhiud"]
+WC4 = ["ll", "qq1", "qq3", "lq1", "lq3", "ee", "uu", "dd", "eu", "ed", "ud1", "ud8", "le", "lu", "ld", "qe", "qu1", "qd1", "qu8", "qd8", "ledq", "quqd1", "quqd8", "lequ1", "lequ3", "duql", "qque", "qqql", "duue"]
+
+WC = {}
+for i, n in enumerate(WC0):
+    WC[n] = rwc[0][i]
+for i, n in enumerate(WC2):
+    WC[n] = np.array(rwc[1][i])
+for i, n in enumerate(WC4):
+    WC[n] = np.array(rwc[2][i])
 
 class TestBeta(unittest.TestCase):
+
     def test_beta(self):
-        G_u = np.matrix(np.arange(9).reshape((3,3))+1j*np.arange(9).reshape((3,3)))
-        G_d = np.matrix(np.arange(9).reshape((3,3))+1j*np.arange(9).reshape((3,3)))
-        G_e = np.matrix(np.arange(9).reshape((3,3))+1j*np.arange(9).reshape((3,3)))
-        g = 1
-        gp = 1
-        gs = 1
-        m = 1
-        HIGHSCALE = 1
-        Lambda = 1
-
-        WC={}
-
-        #1D
-        WC["G"]=1
-        WC["Gtilde"]=1
-        WC["W"]=1
-        WC["Wtilde"]=1
-        WC["CurlyPhi"]=1
-        WC["CurlyPhiEmptySquare"]=1
-        WC["CurlyPhiD"]=1
-        WC["CurlyPhiG"]=1
-        WC["CurlyPhiB"]=1
-        WC["CurlyPhiW"]=1
-        WC["CurlyPhiWB"]=1
-        WC["CurlyPhiGtilde"]=1
-        WC["CurlyPhiBtilde"]=1
-        WC["CurlyPhiWtilde"]=1
-        WC["CurlyPhiWtildeB"]=1
-
-        #2D
-        x=np.matrix(np.arange(9).reshape((3,3))+1j*np.arange(9).reshape((3,3)))
-        WC["uCurlyPhi"]=x
-        WC["dCurlyPhi"]=x
-        WC["eCurlyPhi"]=x
-        WC["eW"]=x
-        WC["eB"]=x
-        WC["uG"]=x
-        WC["uW"]=x
-        WC["uB"]=x
-        WC["dG"]=x
-        WC["dW"]=x
-        WC["dB"]=x
-        WC["CurlyPhil1"]=x
-        WC["CurlyPhil3"]=x
-        WC["CurlyPhie"]=x
-        WC["CurlyPhiq1"]=x
-        WC["CurlyPhiq3"]=x
-        WC["CurlyPhiu"]=x
-        WC["CurlyPhid"]=x
-        WC["CurlyPhiud"]=x
-
-        #4D
-        y=np.arange(81).reshape(3,3,3,3)
-        WC["ll"]=y
-        WC["qq1"]=y
-        WC["qq3"]=y
-        WC["lq1"]=y
-        WC["lq3"]=y
-        WC["ee"]=y
-        WC["uu"]=y
-        WC["dd"]=y
-        WC["eu"]=y
-        WC["ed"]=y
-        WC["ud1"]=y
-        WC["ud8"]=y
-        WC["le"]=y
-        WC["lu"]=y
-        WC["ld"]=y
-        WC["qe"]=y
-        WC["qu1"]=y
-        WC["qd1"]=y
-        WC["qu8"]=y
-        WC["qd8"]=y
-        WC["ledq"]=y
-        WC["quqd1"]=y
-        WC["quqd8"]=y
-        WC["lequ1"]=y
-        WC["lequ3"]=y
-        WC["duql"]=y
-        WC["qque"]=y
-        WC["qqql"]=y
-        WC["duue"]=y
-
-        # just check this runs without error
-        beta(g, gp, gs, m, Lambda, G_u, G_d, G_e, HIGHSCALE, WC)
+        my_beta = beta(g, gp, gs, m2, Lambda, Gu, Gd, Ge, HIGHSCALE, WC)
+        for i, n in enumerate(WC0):
+            self.assertAlmostEqual(betas[0][i]/my_beta[n].real, 1, places=5)
+        for i, n in enumerate(WC2):
+            npt.assert_array_almost_equal(betas[1][i]/my_beta[n].real, np.ones((3,3)), decimal=5)
+        for i, n in enumerate(WC4):
+            npt.assert_array_almost_equal(betas[2][i]/my_beta[n].real, np.ones((3,3,3,3)), decimal=2)

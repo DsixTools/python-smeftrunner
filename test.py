@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 import numpy.testing as npt
-from beta import beta, beta_array
+from beta import *
 import json
 
 # read in JSON files with numerical input & output of Mathematica code
@@ -35,6 +35,12 @@ class TestBeta(unittest.TestCase):
     def test_beta(self):
         """check that numerical output of Python code equals Mathematica code"""
         my_beta = beta(C)
+        self.assertEqual(list(my_beta.keys()), C_keys)
+        for k in C_keys:
+            if isinstance(my_beta[k], float) or isinstance(my_beta[k], complex):
+                self.assertEqual(C_keys_shape[k], 1)
+            else:
+                self.assertEqual(my_beta[k].shape, C_keys_shape[k], msg=k)
         for i, n in enumerate(C0):
             self.assertAlmostEqual(betas_re[0][i]/my_beta[n].real, 1, places=4)
         for i, n in enumerate(C2):
@@ -51,3 +57,9 @@ class TestBeta(unittest.TestCase):
         n_op = len(C0) + len(C2)*9 + len(C4)*81
         # shape is no. of op.s + no. of SM parameters
         self.assertEqual(my_beta.shape, (n_op + 5 + 3*9 + 3,))
+
+    def test_array2dict(self):
+        d1 = C_array2dict(beta_array(C))
+        d2 = beta(C)
+        for k in d1:
+            npt.assert_array_equal(d1[k], d2[k])

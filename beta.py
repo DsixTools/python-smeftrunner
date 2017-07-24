@@ -2,8 +2,89 @@
 
 import numpy as np
 from collections import OrderedDict
+from functools import reduce
+import operator
 
 I3 = np.identity(3)
+
+C_keys = ['g', 'gp', 'gs', 'Lambda', 'm2', 'Gu', 'Gd', 'Ge', 'Theta', 'Thetap', 'Thetas', 'G', 'Gtilde', 'W', 'Wtilde', 'CurlyPhi', 'CurlyPhiEmptySquare', 'CurlyPhiD', 'CurlyPhiG', 'CurlyPhiB', 'CurlyPhiW', 'CurlyPhiWB', 'CurlyPhiGtilde', 'CurlyPhiBtilde', 'CurlyPhiWtilde', 'CurlyPhiWtildeB', 'uCurlyPhi', 'dCurlyPhi', 'eCurlyPhi', 'eW', 'eB', 'uG', 'uW', 'uB', 'dG', 'dW', 'dB', 'CurlyPhil1', 'CurlyPhil3', 'CurlyPhie', 'CurlyPhiq1', 'CurlyPhiq3', 'CurlyPhiu', 'CurlyPhid', 'CurlyPhiud', 'll', 'qq1', 'qq3', 'lq1', 'lq3', 'ee', 'uu', 'dd', 'eu', 'ed', 'ud1', 'ud8', 'le', 'lu', 'ld', 'qe', 'qu1', 'qd1', 'qu8', 'qd8', 'ledq', 'quqd1', 'quqd8', 'lequ1', 'lequ3', 'duql', 'qque', 'qqql', 'duue']
+
+C_keys_shape = {
+   'g': 1,
+   'gp': 1,
+   'gs': 1,
+   'Lambda': 1,
+   'm2': 1,
+   'Gu': (3, 3),
+   'Gd': (3, 3),
+   'Ge': (3, 3),
+   'Theta': 1,
+   'Thetap': 1,
+   'Thetas': 1,
+   'G': 1,
+   'Gtilde': 1,
+   'W': 1,
+   'Wtilde': 1,
+   'CurlyPhi': 1,
+   'CurlyPhiEmptySquare': 1,
+   'CurlyPhiD': 1,
+   'CurlyPhiG': 1,
+   'CurlyPhiB': 1,
+   'CurlyPhiW': 1,
+   'CurlyPhiWB': 1,
+   'CurlyPhiGtilde': 1,
+   'CurlyPhiBtilde': 1,
+   'CurlyPhiWtilde': 1,
+   'CurlyPhiWtildeB': 1,
+   'uCurlyPhi': (3,3),
+   'dCurlyPhi': (3,3),
+   'eCurlyPhi': (3,3),
+   'eW': (3,3),
+   'eB': (3,3),
+   'uG': (3,3),
+   'uW': (3,3),
+   'uB': (3,3),
+   'dG': (3,3),
+   'dW': (3,3),
+   'dB': (3,3),
+   'CurlyPhil1': (3,3),
+   'CurlyPhil3': (3,3),
+   'CurlyPhie': (3,3),
+   'CurlyPhiq1': (3,3),
+   'CurlyPhiq3': (3,3),
+   'CurlyPhiu': (3,3),
+   'CurlyPhid': (3,3),
+   'CurlyPhiud': (3,3),
+   'll': (3,3,3,3),
+   'qq1': (3,3,3,3),
+   'qq3': (3,3,3,3),
+   'lq1': (3,3,3,3),
+   'lq3': (3,3,3,3),
+   'ee': (3,3,3,3),
+   'uu': (3,3,3,3),
+   'dd': (3,3,3,3),
+   'eu': (3,3,3,3),
+   'ed': (3,3,3,3),
+   'ud1': (3,3,3,3),
+   'ud8': (3,3,3,3),
+   'le': (3,3,3,3),
+   'lu': (3,3,3,3),
+   'ld': (3,3,3,3),
+   'qe': (3,3,3,3),
+   'qu1': (3,3,3,3),
+   'qd1': (3,3,3,3),
+   'qu8': (3,3,3,3),
+   'qd8': (3,3,3,3),
+   'ledq': (3,3,3,3),
+   'quqd1': (3,3,3,3),
+   'quqd8': (3,3,3,3),
+   'lequ1': (3,3,3,3),
+   'lequ3': (3,3,3,3),
+   'duql': (3,3,3,3),
+   'qque': (3,3,3,3),
+   'qqql': (3,3,3,3),
+   'duue': (3,3,3,3),
+}
 
 def beta(C):
     g = C["g"]
@@ -223,6 +304,21 @@ def beta(C):
 
     return Beta
 
-def beta_array(*args, **kwargs):
-    beta_odict = beta(*args, **kwargs)
+def beta_array(C):
+    beta_odict = beta(C)
     return np.hstack([np.asarray(b).ravel() for b in beta_odict.values()])
+
+def C_array2dict(C):
+    """Convert a 1D array containing C values to a dictionary."""
+    d = OrderedDict()
+    i=0
+    for k in C_keys:
+        s = C_keys_shape[k]
+        if s == 1:
+            j = i+1
+            d[k] = C[i:j]
+        else:
+            j = i + reduce(operator.mul, s, 1)
+            d[k] = C[i:j].reshape(s)
+        i = j
+    return d

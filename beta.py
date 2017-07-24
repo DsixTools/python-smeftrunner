@@ -4,7 +4,7 @@ import numpy as np
 
 I3 = np.identity(3)
 
-def beta(g, gp, gs, m, Lambda, Gu, Gd, Ge, HIGHSCALE, WC):
+def beta(g, gp, gs, m2, Lambda, Gu, Gd, Ge, HIGHSCALE, WC):
     #Functions previous defined...  #c.c.   # i in eta5
     Eta1 = (3*np.trace(WC["uCurlyPhi"] @ Gu.getH()) + 3*np.trace(WC["dCurlyPhi"] @ Gd.getH()) + np.trace(WC["eCurlyPhi"] @ Ge.getH()) + 3*np.conj(np.trace(WC["uCurlyPhi"] @ Gu.getH())) + 3*np.conj(np.trace(WC["dCurlyPhi"] @ Gd.getH())) + np.conj(np.trace(WC["eCurlyPhi"] @ Ge.getH())))/2
     Eta2 = -6*np.trace(WC["CurlyPhiq3"] @ Gu @ Gu.getH()) - 6*np.trace(WC["CurlyPhiq3"] @ Gd @ Gd.getH()) - 2*np.trace(WC["CurlyPhil3"] @ Ge @ Ge.getH()) + 3*(np.trace(WC["CurlyPhiud"] @ Gd.getH() @ Gu) + np.conj(np.trace(WC["CurlyPhiud"] @ Gd.getH() @ Gu)))
@@ -26,27 +26,27 @@ def beta(g, gp, gs, m, Lambda, Gu, Gd, Ge, HIGHSCALE, WC):
 
     Beta = {}
 
-    Beta["g"] = -19/6*g**3 - 8*g*m**2/HIGHSCALE**2*WC["CurlyPhiW"]
+    Beta["g"] = -19/6*g**3 - 8*g*m2/HIGHSCALE**2*WC["CurlyPhiW"]
 
-    Beta["gp"] = 41/6*gp**3 - 8*gp*m**2/HIGHSCALE**2*WC["CurlyPhiB"]
+    Beta["gp"] = 41/6*gp**3 - 8*gp*m2/HIGHSCALE**2*WC["CurlyPhiB"]
 
-    Beta["gs"] = -7*gs**3 - 8*gs*m**2/HIGHSCALE**2*WC["CurlyPhiG"]
+    Beta["gs"] = -7*gs**3 - 8*gs*m2/HIGHSCALE**2*WC["CurlyPhiG"]
 
-    Beta["Lambda"] = 12*Lambda**2 + 3/4*gp**4 + 3/2*g**2*gp**2 + 9/4*g**4 - 3*(gp**2 + 3*g**2)*Lambda + 4*Lambda*GammaH - 4*(3*np.trace(Gd @ Gd.getH() @ Gd @ Gd.getH()) + 3*np.trace(Gu @ Gu.getH() @ Gu @ Gu.getH()) + np.trace(Ge @ Ge.getH() @ Ge @ Ge.getH())) + 4*m**2/HIGHSCALE**2*(12*WC["CurlyPhi"] + (-16*Lambda + 10/3*g**2)*WC["CurlyPhiEmptySquare"] + (6*Lambda + 3/2*(gp**2 - g**2))*WC["CurlyPhiD"] + 2*(Eta1 + Eta2) + 9*g**2*WC["CurlyPhiW"] + 3*gp**2*WC["CurlyPhiB"] + 3*g*gp*WC["CurlyPhiWB"] + 4/3*g**2*(np.trace(WC["CurlyPhil3"]) + 3*np.trace(WC["CurlyPhiq3"])))
+    Beta["Lambda"] = 12*Lambda**2 + 3/4*gp**4 + 3/2*g**2*gp**2 + 9/4*g**4 - 3*(gp**2 + 3*g**2)*Lambda + 4*Lambda*GammaH - 4*(3*np.trace(Gd @ Gd.getH() @ Gd @ Gd.getH()) + 3*np.trace(Gu @ Gu.getH() @ Gu @ Gu.getH()) + np.trace(Ge @ Ge.getH() @ Ge @ Ge.getH())) + 4*m2/HIGHSCALE**2*(12*WC["CurlyPhi"] + (-16*Lambda + 10/3*g**2)*WC["CurlyPhiEmptySquare"] + (6*Lambda + 3/2*(gp**2 - g**2))*WC["CurlyPhiD"] + 2*(Eta1 + Eta2) + 9*g**2*WC["CurlyPhiW"] + 3*gp**2*WC["CurlyPhiB"] + 3*g*gp*WC["CurlyPhiWB"] + 4/3*g**2*(np.trace(WC["CurlyPhil3"]) + 3*np.trace(WC["CurlyPhiq3"])))
 
-    Beta["m**2"] = m**2*(6*Lambda - 9/2*g**2 - 3/2*gp**2 + 2*GammaH + 4*m**2/HIGHSCALE**2*(WC["CurlyPhiD"] - 2*WC["CurlyPhiEmptySquare"]))
+    Beta["m2"] = m2*(6*Lambda - 9/2*g**2 - 3/2*gp**2 + 2*GammaH + 4*m2/HIGHSCALE**2*(WC["CurlyPhiD"] - 2*WC["CurlyPhiEmptySquare"]))
 
-    Beta["Gu"] = 3/2*(Gu @ Gu.getH() @ Gu - Gd @ Gd.getH() @ Gu) + (GammaH - 9/4*g**2 - 17/12*gp**2 - 8*gs**2)*Gu + 2*m**2/HIGHSCALE**2*(3*WC["uCurlyPhi"] + 1/2*(WC["CurlyPhiD"] - 2*WC["CurlyPhiEmptySquare"])*Gu - WC["CurlyPhiq1"].getH() @ Gu + 3*WC["CurlyPhiq3"].getH() @ Gu + Gu @ WC["CurlyPhiu"].getH() - Gd @ WC["CurlyPhiud"].getH() - 2*(np.einsum("rpts,pt", WC["qu1"], Gu) + 4/3*np.einsum("rpts,pt", WC["qu8"], Gu)) - np.einsum("ptrs,pt", WC["lequ1"], np.conj(Ge)) + 3*np.einsum("rspt,pt", WC["quqd1"], np.conj(Gd)) + 1/2*(np.einsum("psrt,pt", WC["quqd1"], np.conj(Gd)) + 4/3*np.einsum("psrt,pt", WC["quqd8"], np.conj(Gd))))
+    Beta["Gu"] = 3/2*(Gu @ Gu.getH() @ Gu - Gd @ Gd.getH() @ Gu) + (GammaH - 9/4*g**2 - 17/12*gp**2 - 8*gs**2)*Gu + 2*m2/HIGHSCALE**2*(3*WC["uCurlyPhi"] + 1/2*(WC["CurlyPhiD"] - 2*WC["CurlyPhiEmptySquare"])*Gu - WC["CurlyPhiq1"].getH() @ Gu + 3*WC["CurlyPhiq3"].getH() @ Gu + Gu @ WC["CurlyPhiu"].getH() - Gd @ WC["CurlyPhiud"].getH() - 2*(np.einsum("rpts,pt", WC["qu1"], Gu) + 4/3*np.einsum("rpts,pt", WC["qu8"], Gu)) - np.einsum("ptrs,pt", WC["lequ1"], np.conj(Ge)) + 3*np.einsum("rspt,pt", WC["quqd1"], np.conj(Gd)) + 1/2*(np.einsum("psrt,pt", WC["quqd1"], np.conj(Gd)) + 4/3*np.einsum("psrt,pt", WC["quqd8"], np.conj(Gd))))
 
-    Beta["Gd"] = 3/2*(Gd @ Gd.getH() @ Gd - Gu @ Gu.getH() @ Gd) + (GammaH - 9/4*g**2 - 5/12*gp**2 - 8*gs**2)*Gd + 2*m**2/HIGHSCALE**2*(3*WC["dCurlyPhi"] + 1/2*(WC["CurlyPhiD"] - 2*WC["CurlyPhiEmptySquare"])*Gd + WC["CurlyPhiq1"].getH() @ Gd + 3*WC["CurlyPhiq3"].getH() @ Gd - Gd @ WC["CurlyPhid"].getH() - Gu @ WC["CurlyPhiud"] - 2*(np.einsum("rpts,pt", WC["qd1"], Gd) + 4/3*np.einsum("rpts,pt", WC["qd8"], Gd)) + np.einsum("ptsr,tp", np.conj(WC["ledq"]), np.conj(Ge)) + 3*np.einsum("ptrs,pt", WC["quqd1"], np.conj(Gu)) + 1/2*(np.einsum("rpts,pt", WC["quqd1"], np.conj(Gu)) + 4/3*np.einsum("rpts,pt", WC["quqd8"], np.conj(Gu))))
+    Beta["Gd"] = 3/2*(Gd @ Gd.getH() @ Gd - Gu @ Gu.getH() @ Gd) + (GammaH - 9/4*g**2 - 5/12*gp**2 - 8*gs**2)*Gd + 2*m2/HIGHSCALE**2*(3*WC["dCurlyPhi"] + 1/2*(WC["CurlyPhiD"] - 2*WC["CurlyPhiEmptySquare"])*Gd + WC["CurlyPhiq1"].getH() @ Gd + 3*WC["CurlyPhiq3"].getH() @ Gd - Gd @ WC["CurlyPhid"].getH() - Gu @ WC["CurlyPhiud"] - 2*(np.einsum("rpts,pt", WC["qd1"], Gd) + 4/3*np.einsum("rpts,pt", WC["qd8"], Gd)) + np.einsum("ptsr,tp", np.conj(WC["ledq"]), np.conj(Ge)) + 3*np.einsum("ptrs,pt", WC["quqd1"], np.conj(Gu)) + 1/2*(np.einsum("rpts,pt", WC["quqd1"], np.conj(Gu)) + 4/3*np.einsum("rpts,pt", WC["quqd8"], np.conj(Gu))))
 
-    Beta["Ge"] = 3/2*Ge @ Ge.getH() @ Ge + (GammaH - 3/4*(3*g**2 + 5*gp**2))*Ge + 2*m**2/HIGHSCALE**2*(3*WC["eCurlyPhi"] + 1/2*(WC["CurlyPhiD"] - 2*WC["CurlyPhiEmptySquare"])*Ge + WC["CurlyPhil1"].getH() @ Ge + 3*WC["CurlyPhil3"].getH() @ Ge - Ge @ WC["CurlyPhie"].getH() - 2*np.einsum("rpts,pt", WC["le"], Ge) + 3*np.einsum("rspt,tp", WC["ledq"], Gd) - 3*np.einsum("rspt,pt", WC["lequ1"], np.conj(Gu)))
+    Beta["Ge"] = 3/2*Ge @ Ge.getH() @ Ge + (GammaH - 3/4*(3*g**2 + 5*gp**2))*Ge + 2*m2/HIGHSCALE**2*(3*WC["eCurlyPhi"] + 1/2*(WC["CurlyPhiD"] - 2*WC["CurlyPhiEmptySquare"])*Ge + WC["CurlyPhil1"].getH() @ Ge + 3*WC["CurlyPhil3"].getH() @ Ge - Ge @ WC["CurlyPhie"].getH() - 2*np.einsum("rpts,pt", WC["le"], Ge) + 3*np.einsum("rspt,tp", WC["ledq"], Gd) - 3*np.einsum("rspt,pt", WC["lequ1"], np.conj(Gu)))
 
-    Beta["Theta"] = -128*np.pi**2/g**2*m**2/HIGHSCALE**2*WC["CurlyPhiWtilde"]
+    Beta["Theta"] = -128*np.pi**2/g**2*m2/HIGHSCALE**2*WC["CurlyPhiWtilde"]
 
-    Beta["Thetap"] = -128*np.pi**2/gp**2*m**2/HIGHSCALE**2*WC["CurlyPhiBtilde"]
+    Beta["Thetap"] = -128*np.pi**2/gp**2*m2/HIGHSCALE**2*WC["CurlyPhiBtilde"]
 
-    Beta["Thetas"] = -128*np.pi**2/gs**2*m**2/HIGHSCALE**2*WC["CurlyPhiGtilde"]
+    Beta["Thetas"] = -128*np.pi**2/gs**2*m2/HIGHSCALE**2*WC["CurlyPhiGtilde"]
 
     Beta["G"] = 15*gs**2*WC["G"]
 

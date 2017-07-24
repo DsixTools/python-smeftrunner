@@ -5,7 +5,17 @@ from collections import OrderedDict
 
 I3 = np.identity(3)
 
-def beta(g, gp, gs, m2, Lambda, Gu, Gd, Ge, HIGHSCALE, WC):
+def beta(WC):
+    g = WC["g"]
+    gp = WC["gp"]
+    gs = WC["gs"]
+    m2 = WC["m2"]
+    Lambda = WC["Lambda"]
+    Gu = WC["Gu"]
+    Gd = WC["Gd"]
+    Ge = WC["Ge"]
+    HIGHSCALE = WC["HIGHSCALE"]
+
     #Functions previous defined...  #c.c.   # i in eta5
     Eta1 = (3*np.trace(WC["uCurlyPhi"] @ Gu.conj().T) + 3*np.trace(WC["dCurlyPhi"] @ Gd.conj().T) + np.trace(WC["eCurlyPhi"] @ Ge.conj().T) + 3*np.conj(np.trace(WC["uCurlyPhi"] @ Gu.conj().T)) + 3*np.conj(np.trace(WC["dCurlyPhi"] @ Gd.conj().T)) + np.conj(np.trace(WC["eCurlyPhi"] @ Ge.conj().T)))/2
     Eta2 = -6*np.trace(WC["CurlyPhiq3"] @ Gu @ Gu.conj().T) - 6*np.trace(WC["CurlyPhiq3"] @ Gd @ Gd.conj().T) - 2*np.trace(WC["CurlyPhil3"] @ Ge @ Ge.conj().T) + 3*(np.trace(WC["CurlyPhiud"] @ Gd.conj().T @ Gu) + np.conj(np.trace(WC["CurlyPhiud"] @ Gd.conj().T @ Gu)))

@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 import numpy.testing as npt
-from beta import beta
+from beta import beta, beta_array
 import json
 
 # read in JSON files with numerical input & output of Mathematica code
@@ -45,3 +45,9 @@ class TestBeta(unittest.TestCase):
             npt.assert_array_almost_equal(betas_im[1][i]/my_beta[n].imag, np.ones((3,3)), decimal=4)
         for i, n in enumerate(WC4):
             npt.assert_array_almost_equal(betas_im[2][i]/my_beta[n].imag, np.ones((3,3,3,3)), decimal=2)
+
+    def test_beta_array(self):
+        my_beta = beta_array(g, gp, gs, m2, Lambda, Gu, Gd, Ge, HIGHSCALE, WC)
+        n_op = len(WC0) + len(WC2)*9 + len(WC4)*81
+        # shape is no. of op.s + no. of SM parameters
+        self.assertEqual(my_beta.shape, (n_op + 5 + 3*9 + 3,))

@@ -1,6 +1,7 @@
 """SMEFT beta functions"""
 
 import numpy as np
+from collections import OrderedDict
 
 I3 = np.identity(3)
 
@@ -24,7 +25,7 @@ def beta(g, gp, gs, m2, Lambda, Gu, Gd, Ge, HIGHSCALE, WC):
     Xid = 2*(np.einsum("prst,rs", WC["qd1"], Gd) + 4/3*np.einsum("prst,rs", WC["qd8"], Gd)) - (3*np.einsum("srpt,sr", WC["quqd1"], np.conj(Gu)) + 1/2*(np.einsum("prst,sr", WC["quqd1"], np.conj(Gu)) + 4/3*np.einsum("prst,sr", WC["quqd8"], np.conj(Gu)))) - np.einsum("srtp,sr", np.conj(WC["ledq"]), Ge)
     Xiu = 2*(np.einsum("prst,rs", WC["qu1"], Gu) + 4/3*np.einsum("prst,rs", WC["qu8"], Gu)) - (3*np.einsum("ptsr,sr", WC["quqd1"], np.conj(Gd)) + 1/2*(np.einsum("stpr,sr", WC["quqd1"], np.conj(Gd)) + 4/3*np.einsum("stpr,sr", WC["quqd8"], np.conj(Gd)))) + np.einsum("srpt,sr", WC["lequ1"], np.conj(Ge))
 
-    Beta = {}
+    Beta = OrderedDict()
 
     Beta["g"] = -19/6*g**3 - 8*g*m2/HIGHSCALE**2*WC["CurlyPhiW"]
 
@@ -211,3 +212,7 @@ def beta(g, gp, gs, m2, Lambda, Gu, Gd, Ge, HIGHSCALE, WC):
     Beta["duue"] = -(2*gp**2 + 4*gs**2)*np.einsum("prst", WC["duue"]) - 20/3*gp**2*np.einsum("psrt", WC["duue"]) + 4*np.einsum("ws,vt,prwv", Gu, Ge, WC["duql"]) - 8*np.einsum("vp,wr,vwst", Gd, Gu, WC["qque"]) + np.einsum("vp,vrst", Gd.conj().T @ Gd, WC["duue"]) + np.einsum("vr,pvst", Gu.conj().T @ Gu, WC["duue"]) + np.einsum("vs,prvt", Gu.conj().T @ Gu, WC["duue"]) + np.einsum("vt,prsv", Ge.conj().T @ Ge, WC["duue"])
 
     return Beta
+
+def beta_array(*args, **kwargs):
+    beta_odict = beta(*args, **kwargs)
+    return np.hstack([np.asarray(b).ravel() for b in beta_odict.values()])

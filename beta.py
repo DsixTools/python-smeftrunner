@@ -86,7 +86,7 @@ C_keys_shape = {
    'duue': (3,3,3,3),
 }
 
-def beta(C):
+def beta(C, HIGHSCALE):
     g = C["g"]
     gp = C["gp"]
     gs = C["gs"]
@@ -95,7 +95,6 @@ def beta(C):
     Gu = C["Gu"]
     Gd = C["Gd"]
     Ge = C["Ge"]
-    HIGHSCALE = C["HIGHSCALE"]
 
     #Functions previous defined...  #c.c.   # i in eta5
     Eta1 = (3*np.trace(C["uCurlyPhi"] @ Gu.conj().T) + 3*np.trace(C["dCurlyPhi"] @ Gd.conj().T) + np.trace(C["eCurlyPhi"] @ Ge.conj().T) + 3*np.conj(np.trace(C["uCurlyPhi"] @ Gu.conj().T)) + 3*np.conj(np.trace(C["dCurlyPhi"] @ Gd.conj().T)) + np.conj(np.trace(C["eCurlyPhi"] @ Ge.conj().T)))/2
@@ -304,8 +303,8 @@ def beta(C):
 
     return Beta
 
-def beta_array(C):
-    beta_odict = beta(C)
+def beta_array(C, HIGHSCALE):
+    beta_odict = beta(C, HIGHSCALE)
     return np.hstack([np.asarray(b).ravel() for b in beta_odict.values()])
 
 def C_array2dict(C):

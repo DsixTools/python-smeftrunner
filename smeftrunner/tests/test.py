@@ -1,15 +1,16 @@
 import unittest
 import numpy as np
 import numpy.testing as npt
-from beta import *
-from rge import *
+from smeftrunner import beta, rge
 import json
+import pkgutil
 
 # read in JSON files with numerical input & output of Mathematica code
-rpar = json.load(open('random_par.json', 'r'))
-rC = json.load(open('random_wc.json', 'r'))
-betas_re = json.load(open('betas_re.json', 'r'))
-betas_im = json.load(open('betas_im.json', 'r'))
+rpar = json.loads(pkgutil.get_data('smeftrunner', 'tests/data/random_par.json').decode('utf-8'))
+rC = json.loads(pkgutil.get_data('smeftrunner', 'tests/data/random_wc.json').decode('utf-8'))
+betas_re = json.loads(pkgutil.get_data('smeftrunner', 'tests/data/betas_re.json').decode('utf-8'))
+betas_im = json.loads(pkgutil.get_data('smeftrunner', 'tests/data/betas_im.json').decode('utf-8'))
+
 
 # reconstruct SM parameters
 C = {}
@@ -35,13 +36,13 @@ for i, n in enumerate(C4):
 class TestBeta(unittest.TestCase):
     def test_beta(self):
         """check that numerical output of Python code equals Mathematica code"""
-        my_beta = beta(C, HIGHSCALE)
-        self.assertEqual(list(my_beta.keys()), C_keys)
-        for k in C_keys:
+        my_beta = beta.beta(C, HIGHSCALE)
+        self.assertEqual(list(my_beta.keys()), beta.C_keys)
+        for k in beta.C_keys:
             if isinstance(my_beta[k], float) or isinstance(my_beta[k], complex):
-                self.assertEqual(C_keys_shape[k], 1)
+                self.assertEqual(beta.C_keys_shape[k], 1)
             else:
-                self.assertEqual(my_beta[k].shape, C_keys_shape[k], msg=k)
+                self.assertEqual(my_beta[k].shape, beta.C_keys_shape[k], msg=k)
         for i, n in enumerate(C0):
             self.assertAlmostEqual(betas_re[0][i]/my_beta[n].real, 1, places=4)
         for i, n in enumerate(C2):
@@ -54,16 +55,16 @@ class TestBeta(unittest.TestCase):
             npt.assert_array_almost_equal(betas_im[2][i]/my_beta[n].imag, np.ones((3,3,3,3)), decimal=2)
 
     def test_beta_array(self):
-        my_beta = beta_array(C, HIGHSCALE)
+        my_beta = beta.beta_array(C, HIGHSCALE)
         n_op = len(C0) + len(C2)*9 + len(C4)*81
         # shape is no. of op.s + no. of SM parameters
         self.assertEqual(my_beta.shape, (n_op + 5 + 3*9 + 3,))
 
     def test_array2dict(self):
-        d1 = C_array2dict(beta_array(C,  HIGHSCALE))
-        d2 = beta(C, HIGHSCALE)
+        d1 = beta.C_array2dict(beta.beta_array(C,  HIGHSCALE))
+        d2 = beta.beta(C, HIGHSCALE)
         for k in d1:
             npt.assert_array_equal(d1[k], d2[k])
 
     def test_rgell(self):
-        C_out = smeft_evolve_leadinglog(C_in=C, HIGHSCALE=HIGHSCALE, t_in=10000, t_out=100)
+        C_out = rge.smeft_evolve_leadinglog(C_in=C, HIGHSCALE=HIGHSCALE, t_in=10000, t_out=100)

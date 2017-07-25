@@ -4,7 +4,7 @@ setup(name='smeftrunner',
       version='0.1',
       author='Xuanyou Pan, David M. Straub',
       author_email='xuanyou.pan@tum.de, david.straub@tum.de',
-      url='https://github.com/DavidMStraub/smeftrunner',
+      url='https://github.com/DsixTools/smeftrunner',
       description='A Python package for the renormalization group evolution in the Standard Model Effective Field Theory (SMEFT).',
       long_description="""A Python package for the renormalization group
       evolution in the Standard Model Effective Field Theory (SMEFT).

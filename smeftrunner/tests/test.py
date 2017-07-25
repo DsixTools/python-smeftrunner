@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 import numpy.testing as npt
-from smeftrunner import beta, rge
+from smeftrunner import beta, rge, SMEFT
 import json
 import pkgutil
 
@@ -72,6 +72,7 @@ class TestBeta(unittest.TestCase):
         for k in d3:
             npt.assert_array_equal(d3[k], C[k])
 
+class TestRGE(unittest.TestCase):
     def test_rgell(self):
         # evolve only a very small bit and check that LL approximation
         # and full result agree
@@ -84,3 +85,10 @@ class TestBeta(unittest.TestCase):
         for n in C4:
             npt.assert_array_almost_equal((C_out[n]/C_out_ll[n]).real, np.ones((3,3,3,3)), decimal=1,
                 err_msg="failed for {}".format(n))
+
+class TestClasses(unittest.TestCase):
+    def test_smeft(self):
+        # just check this doesn't raise errors
+        smeft = SMEFT(C_in=C, scale_in=1000)
+        smeft.rgevolve(scale_out=900)
+        smeft.rgevolve_leadinglog(scale_out=900)

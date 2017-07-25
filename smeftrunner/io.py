@@ -1,6 +1,20 @@
 import numpy as np
 from smeftrunner import beta
 from collections import OrderedDict, defaultdict
+import pylha
+import json
+import yaml
+
+def load(stream, fmt='lha'):
+    if fmt == 'lha':
+        return pylha.load(stream)
+    elif fmt == 'json':
+        if isinstance(stream, str):
+            return json.loads(stream)
+        else:
+            return json.load(stream)
+    elif fmt == 'yaml':
+        return yaml.load(stream)
 
 def lhamatrix(values, shape):
     """Return a matrix given a list of values of the form

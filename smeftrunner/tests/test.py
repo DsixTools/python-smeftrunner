@@ -89,7 +89,15 @@ class TestRGE(unittest.TestCase):
 class TestClasses(unittest.TestCase):
     def test_smeft(self):
         # just check this doesn't raise errors
-        smeft = SMEFT(C_in=C, scale_in=1000)
+        smeft = SMEFT()
+        with self.assertRaises(Exception):
+            # no initial condition set
+            smeft.rgevolve(scale_out=900)
+        smeft.C_in = 1
+        with self.assertRaises(Exception):
+            # no initial scale set
+            smeft.rgevolve(scale_out=900)
+        smeft.set_initial(C_in=C, scale_in=1000)
         smeft.rgevolve(scale_out=900)
         smeft.rgevolve_leadinglog(scale_out=900)
 
@@ -99,7 +107,15 @@ class TestIO(unittest.TestCase):
         wc = pkgutil.get_data('smeftrunner', 'tests/data/WCsInput-CPV-SMEFT.dat').decode('utf-8')
         wcout = pkgutil.get_data('smeftrunner', 'tests/data/Output_SMEFTrunner.dat').decode('utf-8')
         io.sm_lha2dict(pylha.load(sm))
+        io.wc_lha2dict(pylha.load(wc))
+        CSM = io.sm_lha2dict(pylha.load(wcout))
         C = io.wc_lha2dict(pylha.load(wcout))
         C2 = io.wc_lha2dict(io.wc_dict2lha(C))
         for k in C:
             npt.assert_array_equal(C[k], C2[k])
+        smeft = SMEFT()
+        smeft.load_initial((wcout,))
+        for k in C:
+            npt.assert_array_equal(C[k], smeft.C_in[k], err_msg="Failed for {}".format(k))
+        for k in CSM:
+            npt.assert_array_equal(CSM[k], smeft.C_in[k], err_msg="Failed for {}".format(k))

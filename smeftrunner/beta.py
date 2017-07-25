@@ -321,3 +321,7 @@ def C_array2dict(C):
             d[k] = C[i:j].reshape(s)
         i = j
     return d
+
+def C_dict2array(C):
+    """Convert an OrderedDict containing C values to a 1D array."""
+    return np.hstack([np.asarray(C[k]).ravel() for k in C_keys])

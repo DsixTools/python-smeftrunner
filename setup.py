@@ -12,5 +12,5 @@ setup(name='smeftrunner',
       'smeftrunner':['tests/data/*',
               ]
       },
-      install_requires=['pylha'],
+      install_requires=['scipy', 'pylha'],
     )

@@ -18,6 +18,9 @@ C["g"], C["gp"], C["gs"], C["Lambda"], C["m2"] = rpar[:5]
 C["Gu"] = np.array(rpar[5]) + 1j*np.array(rpar[6])
 C["Gd"] = np.array(rpar[7]) + 1j*np.array(rpar[8])
 C["Ge"] = np.array(rpar[9]) + 1j*np.array(rpar[10])
+C["Theta"] = 0
+C["Thetap"] = 0
+C["Thetas"] = 0
 HIGHSCALE = 1000
 
 # names of Cs with 0, 2, or 4 fermions (i.e. scalars, 3x3 matrices, and 3x3x3x3 tensors)
@@ -65,6 +68,19 @@ class TestBeta(unittest.TestCase):
         d2 = beta.beta(C, HIGHSCALE)
         for k in d1:
             npt.assert_array_equal(d1[k], d2[k])
+        d3 = beta.C_array2dict(beta.C_dict2array(C))
+        for k in d3:
+            npt.assert_array_equal(d3[k], C[k])
 
     def test_rgell(self):
-        C_out = rge.smeft_evolve_leadinglog(C_in=C, HIGHSCALE=HIGHSCALE, t_in=10000, t_out=100)
+        # evolve only a very small bit and check that LL approximation
+        # and full result agree
+        C_out_ll = rge.smeft_evolve_leadinglog(C_in=C, HIGHSCALE=HIGHSCALE, scale_in=1000, scale_out=950)
+        C_out = rge.smeft_evolve(C_in=C, HIGHSCALE=HIGHSCALE, scale_in=1000, scale_out=950)
+        for n in C0:
+            self.assertAlmostEqual((C_out[n][0]/C_out_ll[n]).real, 1, places=1)
+        for n in C2:
+            npt.assert_array_almost_equal(C_out[n]/C_out_ll[n], np.ones((3,3)), decimal=1)
+        for n in C4:
+            npt.assert_array_almost_equal((C_out[n]/C_out_ll[n]).real, np.ones((3,3,3,3)), decimal=1,
+                err_msg="failed for {}".format(n))

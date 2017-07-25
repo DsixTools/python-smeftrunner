@@ -1,9 +1,10 @@
 import unittest
 import numpy as np
 import numpy.testing as npt
-from smeftrunner import beta, rge, SMEFT
+from smeftrunner import beta, rge, SMEFT, io
 import json
 import pkgutil
+import pylha
 
 # read in JSON files with numerical input & output of Mathematica code
 rpar = json.loads(pkgutil.get_data('smeftrunner', 'tests/data/random_par.json').decode('utf-8'))
@@ -23,10 +24,9 @@ C["Thetap"] = 0
 C["Thetas"] = 0
 HIGHSCALE = 1000
 
-# names of Cs with 0, 2, or 4 fermions (i.e. scalars, 3x3 matrices, and 3x3x3x3 tensors)
-C0 = ["G", "Gtilde", "W", "Wtilde", "CurlyPhi", "CurlyPhiEmptySquare", "CurlyPhiD", "CurlyPhiG", "CurlyPhiB", "CurlyPhiW", "CurlyPhiWB", "CurlyPhiGtilde", "CurlyPhiBtilde", "CurlyPhiWtilde", "CurlyPhiWtildeB"]
-C2 = ["uCurlyPhi", "dCurlyPhi", "eCurlyPhi", "eW", "eB", "uG", "uW", "uB", "dG", "dW", "dB", "CurlyPhil1", "CurlyPhil3", "CurlyPhie", "CurlyPhiq1", "CurlyPhiq3", "CurlyPhiu", "CurlyPhid", "CurlyPhiud"]
-C4 = ["ll", "qq1", "qq3", "lq1", "lq3", "ee", "uu", "dd", "eu", "ed", "ud1", "ud8", "le", "lu", "ld", "qe", "qu1", "qd1", "qu8", "qd8", "ledq", "quqd1", "quqd8", "lequ1", "lequ3", "duql", "qque", "qqql", "duue"]
+C0 = beta.WC_keys_0f
+C2 = beta.WC_keys_2f
+C4 = beta.WC_keys_4f
 
 # construct numerical values of Cs
 for i, n in enumerate(C0):
@@ -92,3 +92,14 @@ class TestClasses(unittest.TestCase):
         smeft = SMEFT(C_in=C, scale_in=1000)
         smeft.rgevolve(scale_out=900)
         smeft.rgevolve_leadinglog(scale_out=900)
+
+class TestIO(unittest.TestCase):
+    def test_load(self):
+        sm = pkgutil.get_data('smeftrunner', 'tests/data/SMInput-CPV.dat').decode('utf-8')
+        wc = pkgutil.get_data('smeftrunner', 'tests/data/WCsInput-CPV-SMEFT.dat').decode('utf-8')
+        wcout = pkgutil.get_data('smeftrunner', 'tests/data/Output_SMEFTrunner.dat').decode('utf-8')
+        io.sm_lha2dict(pylha.load(sm))
+        C = io.wc_lha2dict(pylha.load(wcout))
+        C2 = io.wc_lha2dict(io.wc_dict2lha(C))
+        for k in C:
+            npt.assert_array_equal(C[k], C2[k])

@@ -16,7 +16,7 @@ def load(stream, fmt='lha'):
     elif fmt == 'yaml':
         return yaml.load(stream)
 
-def lhamatrix(values, shape):
+def lha2matrix(values, shape):
     """Return a matrix given a list of values of the form
     [[1, 1, float], [1, 2, float], ...]
     referring to the (1,1)-element etc.
@@ -24,8 +24,15 @@ def lhamatrix(values, shape):
     will be assumed to be zero. Also works for higher-rank tensors."""
     M = np.zeros(shape)
     for v in values:
-        M[tuple([i-1 for i in v[:-1]])] = v[-1]
+        M[tuple([int(i-1) for i in v[:-1]])] = v[-1]
     return M
+
+def matrix2lha(M):
+    l = []
+    ind = np.indices(M.shape).reshape(M.ndim, M.size).T
+    for i in ind:
+        l.append([j+1 for j in i] + [M[tuple(i)]])
+    return l
 
 def sm_lha2dict(lha):
     """Convert a dictionary returned by pylha from a DSixTools SM input file
@@ -38,15 +45,15 @@ def sm_lha2dict(lha):
     v = dict(lha['BLOCK']['SCALAR']['values'])
     d['Lambda'] = v[1]
     d['m2'] = v[2]
-    d['Gu'] = lhamatrix(lha['BLOCK']['GU']['values'], (3,3))
+    d['Gu'] = lha2matrix(lha['BLOCK']['GU']['values'], (3,3))
     if 'IMGU' in lha['BLOCK']:
-        d['Gu'] = d['Gu'] + 1j*lhamatrix(lha['BLOCK']['IMGU']['values'], (3,3))
-    d['Gd'] = lhamatrix(lha['BLOCK']['GD']['values'], (3,3))
+        d['Gu'] = d['Gu'] + 1j*lha2matrix(lha['BLOCK']['IMGU']['values'], (3,3))
+    d['Gd'] = lha2matrix(lha['BLOCK']['GD']['values'], (3,3))
     if 'IMGD' in lha['BLOCK']:
-        d['Gd'] = d['Gd'] + 1j*lhamatrix(lha['BLOCK']['IMGD']['values'], (3,3))
-    d['Ge'] = lhamatrix(lha['BLOCK']['GE']['values'], (3,3))
+        d['Gd'] = d['Gd'] + 1j*lha2matrix(lha['BLOCK']['IMGD']['values'], (3,3))
+    d['Ge'] = lha2matrix(lha['BLOCK']['GE']['values'], (3,3))
     if 'IMGE' in lha['BLOCK']:
-        d['Ge'] = d['Ge'] + 1j*lhamatrix(lha['BLOCK']['IMGE']['values'], (3,3))
+        d['Ge'] = d['Ge'] + 1j*lha2matrix(lha['BLOCK']['IMGE']['values'], (3,3))
     # thetas default to 0
     if 'THETA' in lha['BLOCK']:
         v = dict(lha['BLOCK']['THETA']['values'])
@@ -58,6 +65,22 @@ def sm_lha2dict(lha):
         d['Thetap'] = 0
         d['Thetas'] = 0
     return d
+
+def sm_dict2lha(d):
+    """Convert a a dictionary of SM parameters into
+    a dictionary that pylha can convert into a DSixTools SM output file."""
+    blocks = OrderedDict([
+        ('GAUGE', {'values': [[1, d['g'].real], [2, d['gp'].real], [3, d['gs'].real]]}),
+        ('SCALAR', {'values': [[1, d['Lambda'].real], [2, d['m2'].real]]}),
+        ('GU', {'values': matrix2lha(d['Gu'].real)}),
+        ('IMGU', {'values': matrix2lha(d['Gu'].imag)}),
+        ('GD', {'values': matrix2lha(d['Gd'].real)}),
+        ('IMGD', {'values': matrix2lha(d['Gd'].imag)}),
+        ('GE', {'values': matrix2lha(d['Ge'].real)}),
+        ('IMGE', {'values': matrix2lha(d['Ge'].imag)}),
+        ('THETA', {'values': [[1, d['Theta'].real], [2, d['Thetap'].real], [3, d['Thetas'].real]]}),
+        ])
+    return {'BLOCK': blocks}
 
 # dictionary necessary for translating to DSixTools IO format
 WC_dict_0f = OrderedDict([
@@ -90,33 +113,33 @@ def wc_lha2dict(lha):
             C[k] = 0
     for k in beta.WC_keys_2f:
         try:
-            C[k] = lhamatrix(lha['BLOCK']['WC' + k.upper()]['values'], (3,3))
+            C[k] = lha2matrix(lha['BLOCK']['WC' + k.upper()]['values'], (3,3)).real
         except KeyError:
             C[k] = np.zeros((3,3))
         try: # try to add imaginary part
-            C[k] = C[k] + 1j*lhamatrix(lha['BLOCK']['IMWC' + k.upper()]['values'], (3,3))
+            C[k] = C[k] + 1j*lha2matrix(lha['BLOCK']['IMWC' + k.upper()]['values'], (3,3))
         except KeyError:
             pass
     for k in beta.WC_keys_4f:
         try:
-            C[k] = lhamatrix(lha['BLOCK']['WC' + k.upper()]['values'], (3,3,3,3))
+            C[k] = lha2matrix(lha['BLOCK']['WC' + k.upper()]['values'], (3,3,3,3))
         except KeyError:
             C[k] = np.zeros((3,3,3,3))
         try: # try to add imaginary part
-            C[k] = C[k] + 1j*lhamatrix(lha['BLOCK']['IMWC' + k.upper()]['values'], (3,3,3,3))
+            C[k] = C[k] + 1j*lha2matrix(lha['BLOCK']['IMWC' + k.upper()]['values'], (3,3,3,3))
         except KeyError:
             pass
     return C
 
 def wc_dict2lha(wc):
-    """Convert a dictionary returned by pylha from a DSixTools WC input file
-    into a dictionary of Wilson coefficients."""
+    """Convert a a dictionary of Wilson coefficients into
+    a dictionary that pylha can convert into a DSixTools WC output file."""
     d = OrderedDict()
     for name, (block, i) in WC_dict_0f.items():
         if block not in d:
             d[block] = defaultdict(list)
         if wc[name] != 0:
-            d[block]['values'].append([i, wc[name]])
+            d[block]['values'].append([i, wc[name].real])
     for name in beta.WC_keys_2f:
         reblock = 'WC'+name.upper()
         imblock = 'IMWC'+name.upper()

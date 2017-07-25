@@ -323,7 +323,7 @@ def C_array2dict(C):
         s = C_keys_shape[k]
         if s == 1:
             j = i+1
-            d[k] = C[i:j]
+            d[k] = C[i]
         else:
             j = i + reduce(operator.mul, s, 1)
             d[k] = C[i:j].reshape(s)

@@ -1,5 +1,6 @@
 from . import rge
 from . import io
+import pylha
 
 class SMEFT(object):
     """Parameter point in the Standard Model Effective Field Theory."""
@@ -24,6 +25,12 @@ class SMEFT(object):
         sm = io.sm_lha2dict(d)
         C.update(sm)
         self.C_in = C
+
+    def dump(self, C_out, stream=None, fmt='lha'):
+        sm = io.sm_dict2lha(C_out)['BLOCK']
+        wc = io.wc_dict2lha(C_out)['BLOCK']
+        wc.update(sm)
+        return pylha.dump({'BLOCK': wc}, fmt=fmt, stream=stream)
 
     def rgevolve(self, scale_out, **kwargs):
         self._check_initial()

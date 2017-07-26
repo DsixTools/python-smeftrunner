@@ -76,8 +76,8 @@ class TestRGE(unittest.TestCase):
     def test_rgell(self):
         # evolve only a very small bit and check that LL approximation
         # and full result agree
-        C_out_ll = rge.smeft_evolve_leadinglog(C_in=C, HIGHSCALE=HIGHSCALE, scale_in=1000, scale_out=950)
-        C_out = rge.smeft_evolve(C_in=C, HIGHSCALE=HIGHSCALE, scale_in=1000, scale_out=950)
+        C_out_ll = rge.smeft_evolve_leadinglog(C_in=C, scale_high=HIGHSCALE, scale_in=1000, scale_out=950)
+        C_out = rge.smeft_evolve(C_in=C, scale_high=HIGHSCALE, scale_in=1000, scale_out=950)
         for n in C0:
             self.assertAlmostEqual((C_out[n]/C_out_ll[n]).real, 1, places=1)
         for n in C2:
@@ -97,7 +97,7 @@ class TestClasses(unittest.TestCase):
         with self.assertRaises(Exception):
             # no initial scale set
             smeft.rgevolve(scale_out=900)
-        smeft.set_initial(C_in=C, scale_in=1000)
+        smeft.set_initial(C_in=C, scale_in=1000, scale_high=1000)
         smeft.rgevolve(scale_out=900)
         smeft.rgevolve_leadinglog(scale_out=900)
 
@@ -134,6 +134,7 @@ class TestIO(unittest.TestCase):
         smeft = SMEFT()
         smeft.load_initial((wcout,))
         smeft.scale_in = 1000
+        smeft.scale_high = 1000
         C_out = smeft.rgevolve(scale_out=900)
         C_dump = smeft.dump(C_out)
         smeft.load_initial((C_dump,))

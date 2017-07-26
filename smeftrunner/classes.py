@@ -11,12 +11,15 @@ class SMEFT(object):
         """Initialize the SMEFT instance."""
         self.C_in = None
         self.scale_in = None
+        self.scale_high = None
 
-    def set_initial(self, C_in, scale_in):
-        """Set the initial values for parameters and Wilson coefficients at
-        the scale `scale_in`."""
+    def set_initial(self, C_in, scale_in, scale_high):
+        r"""Set the initial values for parameters and Wilson coefficients at
+        the scale `scale_in`, setting the new physics scale $\Lambda$ to
+        `scale_high`."""
         self.C_in = C_in
         self.scale_in = scale_in
+        self.scale_high = scale_high
 
     def load_initial(self, streams):
         """Load the initial values for parameters and Wilson coefficients from
@@ -53,7 +56,7 @@ class SMEFT(object):
         the ODE solver `scipy.integrate.odeint`."""
         self._check_initial()
         return rge.smeft_evolve(C_in=self.C_in,
-                            HIGHSCALE=self.scale_in,
+                            scale_high=self.scale_high,
                             scale_in=self.scale_in,
                             scale_out=scale_out,
                             **kwargs)
@@ -66,13 +69,16 @@ class SMEFT(object):
         """
         self._check_initial()
         return rge.smeft_evolve_leadinglog(C_in=self.C_in,
-                            HIGHSCALE=self.scale_in,
+                            scale_high=self.scale_high,
                             scale_in=self.scale_in,
                             scale_out=scale_out)
 
     def _check_initial(self):
-        """Check if initial values and scale have been set."""
+        """Check if initial values and scale as well as the new physics scale
+        have been set."""
         if self.C_in is None:
             raise Exception("You have to specify the initial conditions first.")
         if self.scale_in is None:
             raise Exception("You have to specify the initial scale first.")
+        if self.scale_high is None:
+            raise Exception("You have to specify the high scale first.")

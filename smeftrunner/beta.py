@@ -95,6 +95,8 @@ C_keys_shape = {
 }
 
 def beta(C, HIGHSCALE):
+    """Return the beta functions of all SM parameters and SMEFT Wilson
+    coefficients."""
     g = C["g"]
     gp = C["gp"]
     gs = C["gs"]
@@ -312,6 +314,8 @@ def beta(C, HIGHSCALE):
     return Beta
 
 def beta_array(C, HIGHSCALE):
+    """Return the beta functions of all SM parameters and SMEFT Wilson
+    coefficients as a 1D numpy array."""
     beta_odict = beta(C, HIGHSCALE)
     return np.hstack([np.asarray(b).ravel() for b in beta_odict.values()])
 

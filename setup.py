@@ -12,7 +12,7 @@ setup(name='smeftrunner',
       by Alejandro Celis, Javier Fuentes-Martín, Avelino Vicente,
       and Javier Virto (arXiv:1704.04504). RGEs based on arXiv:1308.2627,
       arXiv:1310.4838, and arXiv:1312.2014 by Rodrigo Alonso,
-      Elizabeth Jenkins, Aneesh Manohar, and Michael Trott."""
+      Elizabeth Jenkins, Aneesh Manohar, and Michael Trott.""",
       license='MIT',
       packages=find_packages(),
       package_data={

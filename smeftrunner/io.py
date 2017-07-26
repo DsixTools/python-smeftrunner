@@ -6,6 +6,8 @@ import json
 import yaml
 
 def load(stream, fmt='lha'):
+    """Load a parameter file in DSixTools SLHA-like format or its JSON or
+    YAML representation."""
     if fmt == 'lha':
         return pylha.load(stream)
     elif fmt == 'json':
@@ -28,6 +30,7 @@ def lha2matrix(values, shape):
     return M
 
 def matrix2lha(M):
+    """Inverse function to lha2matrix: return a LHA-like list given a tensor."""
     l = []
     ind = np.indices(M.shape).reshape(M.ndim, M.size).T
     for i in ind:

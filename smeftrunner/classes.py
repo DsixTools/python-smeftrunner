@@ -44,10 +44,10 @@ class SMEFT(object):
         specified, export it to a file. `fmt` defaults to `lha` (the SLHA-like
         DSixTools format), but can also be `json` or `yaml` (see the
         pylha documentation)."""
-        sm = io.sm_dict2lha(C_out)['BLOCK']
+        C = io.sm_dict2lha(C_out)['BLOCK']
         wc = io.wc_dict2lha(C_out)['BLOCK']
-        wc.update(sm)
-        return pylha.dump({'BLOCK': wc}, fmt=fmt, stream=stream)
+        C.update(wc)
+        return pylha.dump({'BLOCK': C}, fmt=fmt, stream=stream)
 
     def rgevolve(self, scale_out, **kwargs):
         """Solve the SMEFT RGEs from the initial scale to `scale_out`.

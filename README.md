@@ -32,7 +32,15 @@ with open('my_input_file.dat', 'r') as f:
   smeft.load_initial((f,))
 ```
 
-Note that the argument must always be a tuple; multiple input files can be specified in this way and will be read in turn (e.g. one file with SM parameters, one with Wilson coefficients).
+Note that the argument must always be a tuple; multiple input files can be specified in this way and will be read in turn (e.g. one file with SM parameters, one with Wilson coefficients):
+
+```python
+with open('my_sm_input.dat', 'r') as f1:
+  with open('my_wc_input.dat', 'r') as f2:
+    smeft.load_initial((f1, f2,))
+```
+The order of reading in the files is irrelevant.
+
 
 The scales can simply be specified as
 

@@ -12,7 +12,7 @@ SM_keys = ['g', 'gp', 'gs', 'Lambda', 'm2', 'Gu', 'Gd', 'Ge', 'Theta', 'Thetap',
 
 # names of WCs with 0, 2, or 4 fermions (i.e. scalars, 3x3 matrices, and 3x3x3x3 tensors)
 WC_keys_0f = ["G", "Gtilde", "W", "Wtilde", "phi", "phiBox", "phiD", "phiG", "phiB", "phiW", "phiWB", "phiGtilde", "phiBtilde", "phiWtilde", "phiWtildeB"]
-WC_keys_2f = ["uphi", "dphi", "ephi", "eW", "eB", "uG", "uW", "uB", "dG", "dW", "dB", "phil1", "phil3", "phie", "phiq1", "phiq3", "phiu", "phid", "phiud", , "llphiphi"]
+WC_keys_2f = ["uphi", "dphi", "ephi", "eW", "eB", "uG", "uW", "uB", "dG", "dW", "dB", "phil1", "phil3", "phie", "phiq1", "phiq3", "phiu", "phid", "phiud", "llphiphi"]
 WC_keys_4f = ["ll", "qq1", "qq3", "lq1", "lq3", "ee", "uu", "dd", "eu", "ed", "ud1", "ud8", "le", "lu", "ld", "qe", "qu1", "qd1", "qu8", "qd8", "ledq", "quqd1", "quqd8", "lequ1", "lequ3", "duql", "qque", "qqql", "duue"]
 
 C_keys = SM_keys + WC_keys_0f + WC_keys_2f + WC_keys_4f

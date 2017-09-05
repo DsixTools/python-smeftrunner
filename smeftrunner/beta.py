@@ -12,7 +12,7 @@ SM_keys = ['g', 'gp', 'gs', 'Lambda', 'm2', 'Gu', 'Gd', 'Ge', 'Theta', 'Thetap',
 
 # names of WCs with 0, 2, or 4 fermions (i.e. scalars, 3x3 matrices, and 3x3x3x3 tensors)
 WC_keys_0f = ["G", "Gtilde", "W", "Wtilde", "phi", "phiBox", "phiD", "phiG", "phiB", "phiW", "phiWB", "phiGtilde", "phiBtilde", "phiWtilde", "phiWtildeB"]
-WC_keys_2f = ["uphi", "dphi", "ephi", "eW", "eB", "uG", "uW", "uB", "dG", "dW", "dB", "phil1", "phil3", "phie", "phiq1", "phiq3", "phiu", "phid", "phiud"]
+WC_keys_2f = ["uphi", "dphi", "ephi", "eW", "eB", "uG", "uW", "uB", "dG", "dW", "dB", "phil1", "phil3", "phie", "phiq1", "phiq3", "phiu", "phid", "phiud", "llphiphi"]
 WC_keys_4f = ["ll", "qq1", "qq3", "lq1", "lq3", "ee", "uu", "dd", "eu", "ed", "ud1", "ud8", "le", "lu", "ld", "qe", "qu1", "qd1", "qu8", "qd8", "ledq", "quqd1", "quqd8", "lequ1", "lequ3", "duql", "qque", "qqql", "duue"]
 
 C_keys = SM_keys + WC_keys_0f + WC_keys_2f + WC_keys_4f
@@ -63,6 +63,7 @@ C_keys_shape = {
    'phiu': (3,3),
    'phid': (3,3),
    'phiud': (3,3),
+   'llphiphi': (3,3),
    'll': (3,3,3,3),
    'qq1': (3,3,3,3),
    'qq3': (3,3,3,3),
@@ -311,6 +312,9 @@ def beta(C, HIGHSCALE):
 
     Beta["duue"] = -(2*gp**2 + 4*gs**2)*np.einsum("prst", C["duue"]) - 20/3*gp**2*np.einsum("psrt", C["duue"]) + 4*np.einsum("ws,vt,prwv", Gu, Ge, C["duql"]) - 8*np.einsum("vp,wr,vwst", Gd, Gu, C["qque"]) + np.einsum("vp,vrst", Gd.conj().T @ Gd, C["duue"]) + np.einsum("vr,pvst", Gu.conj().T @ Gu, C["duue"]) + np.einsum("vs,prvt", Gu.conj().T @ Gu, C["duue"]) + np.einsum("vt,prsv", Ge.conj().T @ Ge, C["duue"])
 
+    """Dimension-5"""
+    Beta["llphiphi"] = (2*Lambda - 3*g**2 + 2*GammaH)*C["llphiphi"]-3/2*(C["llphiphi"] @ Ge @ Ge.conj().T + Ge.conj() @ Ge.T @ C["llphiphi"])
+      
     return Beta
 
 def beta_array(C, HIGHSCALE):

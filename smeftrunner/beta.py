@@ -55,6 +55,7 @@ C_keys_shape = {
    'dG': (3,3),
    'dW': (3,3),
    'dB': (3,3),
+   'llphiphi': (3,3),
    'phil1': (3,3),
    'phil3': (3,3),
    'phie': (3,3),
@@ -127,7 +128,8 @@ def beta(C, HIGHSCALE):
     Xiu = 2*(np.einsum("prst,rs", C["qu1"], Gu) + 4/3*np.einsum("prst,rs", C["qu8"], Gu)) - (3*np.einsum("ptsr,sr", C["quqd1"], np.conj(Gd)) + 1/2*(np.einsum("stpr,sr", C["quqd1"], np.conj(Gd)) + 4/3*np.einsum("stpr,sr", C["quqd8"], np.conj(Gd)))) + np.einsum("srpt,sr", C["lequ1"], np.conj(Ge))
 
     Beta = OrderedDict()
-
+    
+    """SM parameters"""
     Beta["g"] = -19/6*g**3 - 8*g*m2/HIGHSCALE**2*C["phiW"]
 
     Beta["gp"] = 41/6*gp**3 - 8*gp*m2/HIGHSCALE**2*C["phiB"]
@@ -150,6 +152,7 @@ def beta(C, HIGHSCALE):
 
     Beta["Thetas"] = -128*np.pi**2/gs**2*m2/HIGHSCALE**2*C["phiGtilde"]
 
+    """1"""
     Beta["G"] = 15*gs**2*C["G"]
 
     Beta["Gtilde"] = 15*gs**2*C["Gtilde"]
@@ -189,6 +192,7 @@ def beta(C, HIGHSCALE):
     #i
     Beta["phiWtildeB"] = (19/3*gp**2 + 4/3*g**2)*C["phiWtildeB"] + 2*g*gp*(C["phiBtilde"] + C["phiWtilde"]) + 3*g**2*gp*C["Wtilde"] + 2*Lambda*C["phiWtildeB"] - 1j*g*(3*np.trace(C["uB"] @ Gu.conj().T) - 3*np.trace(C["dB"] @ Gd.conj().T) - np.trace(C["eB"] @ Ge.conj().T) - 3*np.conj(np.trace(C["uB"] @ Gu.conj().T)) + 3*np.conj(np.trace(C["dB"] @ Gd.conj().T)) + np.conj(np.trace(C["eB"] @ Ge.conj().T))) - 1j*gp*(5*np.trace(C["uW"] @ Gu.conj().T) + np.trace(C["dW"] @ Gd.conj().T) + 3*np.trace(C["eW"] @ Ge.conj().T) - 5*np.conj(np.trace(C["uW"] @ Gu.conj().T)) - np.conj(np.trace(C["dW"] @ Gd.conj().T)) - 3*np.conj(np.trace(C["eW"] @ Ge.conj().T))) + 2*GammaH*C["phiWtildeB"]
 
+    """(3,3)"""
     #i  #the coefficients of Eta5 is not equal
     Beta["uphi"] = (10/3*g**2*C["phiBox"] + 3/2*(gp**2 - g**2)*C["phiD"] + 32*gs**2*(C["phiG"] + 1j*C["phiGtilde"]) + 9*g**2*(C["phiW"] + 1j*C["phiWtilde"]) + 17/3*gp**2*(C["phiB"] + 1j*C["phiBtilde"]) - g*gp*(C["phiWB"] + 1j*C["phiWtildeB"]) + 4/3*g**2*(np.trace(C["phil3"]) + 3*np.trace(C["phiq3"])))*Gu - (35/12*gp**2 + 27/4*g**2 + 8*gs**2)*C["uphi"] - gp*(5*gp**2 - 3*g**2)*C["uB"] + g*(5*gp**2 - 9*g**2)*C["uW"] - (3*g**2 - gp**2)*Gu @ C["phiu"] + 3*g**2*Gd @ C["phiud"].conj().T + 4*gp**2*C["phiq1"] @ Gu - 4*gp**2*C["phiq3"] @ Gu - 5*gp*(C["uB"] @ Gu.conj().T @ Gu + Gu @ Gu.conj().T @ C["uB"]) - 3*g*(C["uW"] @ Gu.conj().T @ Gu - Gu @ Gu.conj().T @ C["uW"]) - 16*gs*(C["uG"] @ Gu.conj().T @ Gu + Gu @ Gu.conj().T @ C["uG"]) - 12*g*Gd @ Gd.conj().T @ C["uW"] - 6*g*C["dW"] @ Gd.conj().T @ Gu + Lambda*(12*C["uphi"] - 2*C["phiq1"] @ Gu + 6*C["phiq3"] @ Gu + 2*Gu @ C["phiu"] - 2*Gd @ C["phiud"].conj().T - 2*C["phiBox"]*Gu + C["phiD"]*Gu - 4*np.einsum("rpts,pt", C["qu1"], Gu) - 16/3*np.einsum("rpts,pt", C["qu8"], Gu) - 2*np.einsum("ptrs,pt", C["lequ1"], np.conj(Ge)) + 6*np.einsum("rspt,pt", C["quqd1"], np.conj(Gd)) + np.einsum("psrt,pt", C["quqd1"], np.conj(Gd)) + 4/3*np.einsum("psrt,pt", C["quqd8"], np.conj(Gd))) + 2*(Eta1 + Eta2 - 1j*Eta5)*Gu + (C["phiD"] - 6*C["phiBox"])*Gu @ Gu.conj().T @ Gu - 2*C["phiq1"] @ Gu @ Gu.conj().T @ Gu + 6*C["phiq3"] @ Gd @ Gd.conj().T @ Gu + 2*Gu @ Gu.conj().T @ Gu @ C["phiu"] - 2*Gd @ Gd.conj().T @ Gd @ C["phiud"].conj().T + 8*(np.einsum("rpts,pt", C["qu1"], Gu @ Gu.conj().T @ Gu) + 4/3*np.einsum("rpts,pt", C["qu8"], Gu @ Gu.conj().T @ Gu)) - 2*(np.einsum("tsrp,pt", C["quqd1"], Gd.conj().T @ Gd @ Gd.conj().T) + 4/3*np.einsum("tsrp,pt", C["quqd8"], Gd.conj().T @ Gd @ Gd.conj().T)) - 12*np.einsum("rstp,pt", C["quqd1"], Gd.conj().T @ Gd @ Gd.conj().T) + 4*np.einsum("tprs,pt", C["lequ1"], Ge @ Ge.conj().T @ Ge) + 4*C["uphi"] @ Gu.conj().T @ Gu + 5*Gu @ Gu.conj().T @ C["uphi"] - 2*Gd @ C["dphi"].conj().T @ Gu - C["dphi"] @ Gd.conj().T @ Gu - 2*Gd @ Gd.conj().T @ C["uphi"] + 3*GammaH*C["uphi"] + Gammaq @ C["uphi"] + C["uphi"] @ Gammau
 
@@ -246,6 +250,10 @@ def beta(C, HIGHSCALE):
         #co
     Beta["phiud"] = -3*gp**2*C["phiud"] + (2*C["phiBox"] - C["phiD"])*Gu.conj().T @ Gd - 2*Gu.conj().T @ Gd @ C["phid"] + 2*C["phiu"] @ Gu.conj().T @ Gd + 4*(np.einsum("rtps,tp", C["ud1"], Gu.conj().T @ Gd) + 4/3*np.einsum("rtps,tp", C["ud8"], Gu.conj().T @ Gd)) + 2*Gu.conj().T @ Gu @ C["phiud"] + 2*C["phiud"] @ Gd.conj().T @ Gd + 2*GammaH*C["phiud"] + Gammau @ C["phiud"] + C["phiud"] @ Gammad
 
+    """Dimension-5"""
+    Beta["llphiphi"] = (2*Lambda - 3*g**2 + 2*GammaH)*C["llphiphi"]-3/2*(C["llphiphi"] @ Ge @ Ge.conj().T + Ge.conj() @ Ge.T @ C["llphiphi"])
+    
+    """(3,3,3,3)"""
     # the einsum function is strong
     Beta["ll"] = -1/6*gp**2*np.einsum("st,pr", C["phil1"], I3) - 1/6*g**2*(np.einsum("st,pr", C["phil3"], I3) - 2*np.einsum("sr,pt", C["phil3"], I3)) + 1/3*gp**2*(2*np.einsum("prww,st", C["ll"], I3) + np.einsum("pwwr,st", C["ll"], I3)) - 1/3*g**2*np.einsum("pwwr,st", C["ll"], I3) + 2/3*g**2*np.einsum("swwr,pt", C["ll"], I3) - 1/3*gp**2*np.einsum("prww,st", C["lq1"], I3) - g**2*np.einsum("prww,st", C["lq3"], I3) + 2*g**2*np.einsum("ptww,rs", C["lq3"], I3) + 1/3*gp**2*( - 2*np.einsum("prww,st", C["lu"], I3) + np.einsum("prww,st", C["ld"], I3) + np.einsum("prww,st", C["le"], I3)) - 1/2*(np.einsum("pr,st", Ge @ Ge.conj().T, C["phil1"]) - np.einsum("pr,st", Ge @ Ge.conj().T, C["phil3"])) - np.einsum("pt,sr", Ge @ Ge.conj().T, C["phil3"]) - 1/2*np.einsum("sv,tw,prvw", Ge, np.conj(Ge), C["le"]) + np.einsum("pv,vrst", Gammal, C["ll"]) + np.einsum("pvst,vr", C["ll"], Gammal) - 1/6*gp**2*np.einsum("pr,st", C["phil1"], I3) - 1/6*g**2*(np.einsum("pr,st", C["phil3"], I3) - 2*np.einsum("pt,sr", C["phil3"], I3)) + 1/3*gp**2*(2*np.einsum("stww,pr", C["ll"], I3) + np.einsum("swwt,pr", C["ll"], I3)) - 1/3*g**2*np.einsum("swwt,pr", C["ll"], I3) + 2/3*g**2*np.einsum("pwwt,sr", C["ll"], I3) - 1/3*gp**2*np.einsum("stww,pr", C["lq1"], I3) - g**2*np.einsum("stww,pr", C["lq3"], I3) + 2*g**2*np.einsum("srww,tp", C["lq3"], I3) + 1/3*gp**2*( - 2*np.einsum("stww,pr", C["lu"], I3) + np.einsum("stww,pr", C["ld"], I3) + np.einsum("stww,pr", C["le"], I3)) - 1/2*(np.einsum("st,pr", Ge @ Ge.conj().T, C["phil1"]) - np.einsum("st,pr", Ge @ Ge.conj().T, C["phil3"])) - np.einsum("sr,pt", Ge @ Ge.conj().T, C["phil3"]) - 1/2*np.einsum("pv,rw,stvw", Ge, np.conj(Ge), C["le"]) + np.einsum("sv,vtpr", Gammal, C["ll"]) + np.einsum("svpr,vt", C["ll"], Gammal) + 6*g**2*np.einsum("ptsr", C["ll"]) + 3*(gp**2 - g**2)*np.einsum("prst", C["ll"])
 

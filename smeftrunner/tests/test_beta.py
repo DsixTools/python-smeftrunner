@@ -71,7 +71,6 @@ class TestBeta(unittest.TestCase):
         for k in d3:
             npt.assert_array_equal(d3[k], C[k])
 
-class TestRGE(unittest.TestCase):
     def test_rgell(self):
         # evolve only a very small bit and check that LL approximation
         # and full result agree
@@ -84,58 +83,3 @@ class TestRGE(unittest.TestCase):
         for n in C4:
             npt.assert_array_almost_equal((C_out[n]/C_out_ll[n]).real, np.ones((3,3,3,3)), decimal=1,
                 err_msg="failed for {}".format(n))
-
-class TestClasses(unittest.TestCase):
-    def test_smeft(self):
-        # just check this doesn't raise errors
-        smeft = SMEFT()
-        with self.assertRaises(Exception):
-            # no initial condition set
-            smeft.rgevolve(scale_out=900)
-        smeft.C_in = 1
-        with self.assertRaises(Exception):
-            # no initial scale set
-            smeft.rgevolve(scale_out=900)
-        smeft.set_initial(C_in=C, scale_in=1000, scale_high=1000)
-        smeft.rgevolve(scale_out=900)
-        smeft.rgevolve_leadinglog(scale_out=900)
-
-class TestIO(unittest.TestCase):
-    def test_lhamatrix(self):
-        M = np.random.rand(2,3,4)
-        values = io.matrix2lha(M)
-        M2 = io.lha2matrix(values, (2,3,4))
-        npt.assert_array_equal(M, M2)
-
-    def test_load(self):
-        sm = pkgutil.get_data('smeftrunner', 'tests/data/SMInput-CPV.dat').decode('utf-8')
-        wc = pkgutil.get_data('smeftrunner', 'tests/data/WCsInput-CPV-SMEFT.dat').decode('utf-8')
-        wcout = pkgutil.get_data('smeftrunner', 'tests/data/Output_SMEFTrunner.dat').decode('utf-8')
-        io.sm_lha2dict(pylha.load(sm))
-        io.wc_lha2dict(pylha.load(wc))
-        CSM = io.sm_lha2dict(pylha.load(wcout))
-        C = io.wc_lha2dict(pylha.load(wcout))
-        C2 = io.wc_lha2dict(io.wc_dict2lha(C))
-        for k in C:
-            npt.assert_array_equal(C[k], C2[k])
-        smeft = SMEFT()
-        smeft.load_initial((wcout,))
-        for k in C:
-            npt.assert_array_equal(C[k], smeft.C_in[k], err_msg="Failed for {}".format(k))
-        for k in CSM:
-            npt.assert_array_equal(CSM[k], smeft.C_in[k], err_msg="Failed for {}".format(k))
-        CSM2 = io.sm_lha2dict(io.sm_dict2lha(CSM))
-        for k in CSM:
-            npt.assert_array_equal(CSM[k], CSM2[k], err_msg="Failed for {}".format(k))
-
-    def test_dump(self):
-        wcout = pkgutil.get_data('smeftrunner', 'tests/data/Output_SMEFTrunner.dat').decode('utf-8')
-        smeft = SMEFT()
-        smeft.load_initial((wcout,))
-        smeft.scale_in = 1000
-        smeft.scale_high = 1000
-        C_out = smeft.rgevolve(scale_out=900)
-        C_dump = smeft.dump(C_out)
-        smeft.load_initial((C_dump,))
-        for k in C_out:
-            npt.assert_array_almost_equal(C_out[k].real, smeft.C_in[k].real, err_msg="Failed for {}".format(k))

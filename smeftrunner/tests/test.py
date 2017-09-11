@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 import numpy.testing as npt
-from smeftrunner import beta, rge, SMEFT, io
+from smeftrunner import beta, rge, SMEFT, io, definitions
 import json
 import pkgutil
 import pylha
@@ -23,9 +23,9 @@ C["Theta"] = C["Thetap"] = 0
 C["Thetas"] = 0
 HIGHSCALE = 1000
 
-C0 = beta.WC_keys_0f
-C2 = beta.WC_keys_2f
-C4 = beta.WC_keys_4f
+C0 = definitions.WC_keys_0f
+C2 = definitions.WC_keys_2f
+C4 = definitions.WC_keys_4f
 
 # construct numerical values of Cs
 for i, n in enumerate(C0):

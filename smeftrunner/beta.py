@@ -4,97 +4,8 @@ import numpy as np
 from collections import OrderedDict
 from functools import reduce
 import operator
+from .definitions import I3, C_keys, C_keys_shape, SM_keys
 
-I3 = np.identity(3)
-
-# names of SM parameters
-SM_keys = ['g', 'gp', 'gs', 'Lambda', 'm2', 'Gu', 'Gd', 'Ge', 'Theta', 'Thetap', 'Thetas']
-
-# names of WCs with 0, 2, or 4 fermions (i.e. scalars, 3x3 matrices, and 3x3x3x3 tensors)
-WC_keys_0f = ["G", "Gtilde", "W", "Wtilde", "phi", "phiBox", "phiD", "phiG", "phiB", "phiW", "phiWB", "phiGtilde", "phiBtilde", "phiWtilde", "phiWtildeB"]
-WC_keys_2f = ["uphi", "dphi", "ephi", "eW", "eB", "uG", "uW", "uB", "dG", "dW", "dB", "phil1", "phil3", "phie", "phiq1", "phiq3", "phiu", "phid", "phiud", "llphiphi"]
-WC_keys_4f = ["ll", "qq1", "qq3", "lq1", "lq3", "ee", "uu", "dd", "eu", "ed", "ud1", "ud8", "le", "lu", "ld", "qe", "qu1", "qd1", "qu8", "qd8", "ledq", "quqd1", "quqd8", "lequ1", "lequ3", "duql", "qque", "qqql", "duue"]
-
-C_keys = SM_keys + WC_keys_0f + WC_keys_2f + WC_keys_4f
-
-C_keys_shape = {
-   'g': 1,
-   'gp': 1,
-   'gs': 1,
-   'Lambda': 1,
-   'm2': 1,
-   'Gu': (3, 3),
-   'Gd': (3, 3),
-   'Ge': (3, 3),
-   'Theta': 1,
-   'Thetap': 1,
-   'Thetas': 1,
-   'G': 1,
-   'Gtilde': 1,
-   'W': 1,
-   'Wtilde': 1,
-   'phi': 1,
-   'phiBox': 1,
-   'phiD': 1,
-   'phiG': 1,
-   'phiB': 1,
-   'phiW': 1,
-   'phiWB': 1,
-   'phiGtilde': 1,
-   'phiBtilde': 1,
-   'phiWtilde': 1,
-   'phiWtildeB': 1,
-   'uphi': (3,3),
-   'dphi': (3,3),
-   'ephi': (3,3),
-   'eW': (3,3),
-   'eB': (3,3),
-   'uG': (3,3),
-   'uW': (3,3),
-   'uB': (3,3),
-   'dG': (3,3),
-   'dW': (3,3),
-   'dB': (3,3),
-   'llphiphi': (3,3),
-   'phil1': (3,3),
-   'phil3': (3,3),
-   'phie': (3,3),
-   'phiq1': (3,3),
-   'phiq3': (3,3),
-   'phiu': (3,3),
-   'phid': (3,3),
-   'phiud': (3,3),
-   'llphiphi': (3,3),
-   'll': (3,3,3,3),
-   'qq1': (3,3,3,3),
-   'qq3': (3,3,3,3),
-   'lq1': (3,3,3,3),
-   'lq3': (3,3,3,3),
-   'ee': (3,3,3,3),
-   'uu': (3,3,3,3),
-   'dd': (3,3,3,3),
-   'eu': (3,3,3,3),
-   'ed': (3,3,3,3),
-   'ud1': (3,3,3,3),
-   'ud8': (3,3,3,3),
-   'le': (3,3,3,3),
-   'lu': (3,3,3,3),
-   'ld': (3,3,3,3),
-   'qe': (3,3,3,3),
-   'qu1': (3,3,3,3),
-   'qd1': (3,3,3,3),
-   'qu8': (3,3,3,3),
-   'qd8': (3,3,3,3),
-   'ledq': (3,3,3,3),
-   'quqd1': (3,3,3,3),
-   'quqd8': (3,3,3,3),
-   'lequ1': (3,3,3,3),
-   'lequ3': (3,3,3,3),
-   'duql': (3,3,3,3),
-   'qque': (3,3,3,3),
-   'qqql': (3,3,3,3),
-   'duue': (3,3,3,3),
-}
 
 def beta(C, HIGHSCALE):
     """Return the beta functions of all SM parameters and SMEFT Wilson
@@ -128,7 +39,7 @@ def beta(C, HIGHSCALE):
     Xiu = 2*(np.einsum("prst,rs", C["qu1"], Gu) + 4/3*np.einsum("prst,rs", C["qu8"], Gu)) - (3*np.einsum("ptsr,sr", C["quqd1"], np.conj(Gd)) + 1/2*(np.einsum("stpr,sr", C["quqd1"], np.conj(Gd)) + 4/3*np.einsum("stpr,sr", C["quqd8"], np.conj(Gd)))) + np.einsum("srpt,sr", C["lequ1"], np.conj(Ge))
 
     Beta = OrderedDict()
-    
+
     """SM parameters"""
     Beta["g"] = -19/6*g**3 - 8*g*m2/HIGHSCALE**2*C["phiW"]
 
@@ -252,7 +163,7 @@ def beta(C, HIGHSCALE):
 
     """Dimension-5"""
     Beta["llphiphi"] = (2*Lambda - 3*g**2 + 2*GammaH)*C["llphiphi"]-3/2*(C["llphiphi"] @ Ge @ Ge.conj().T + Ge.conj() @ Ge.T @ C["llphiphi"])
-    
+
     """(3,3,3,3)"""
     # the einsum function is strong
     Beta["ll"] = -1/6*gp**2*np.einsum("st,pr", C["phil1"], I3) - 1/6*g**2*(np.einsum("st,pr", C["phil3"], I3) - 2*np.einsum("sr,pt", C["phil3"], I3)) + 1/3*gp**2*(2*np.einsum("prww,st", C["ll"], I3) + np.einsum("pwwr,st", C["ll"], I3)) - 1/3*g**2*np.einsum("pwwr,st", C["ll"], I3) + 2/3*g**2*np.einsum("swwr,pt", C["ll"], I3) - 1/3*gp**2*np.einsum("prww,st", C["lq1"], I3) - g**2*np.einsum("prww,st", C["lq3"], I3) + 2*g**2*np.einsum("ptww,rs", C["lq3"], I3) + 1/3*gp**2*( - 2*np.einsum("prww,st", C["lu"], I3) + np.einsum("prww,st", C["ld"], I3) + np.einsum("prww,st", C["le"], I3)) - 1/2*(np.einsum("pr,st", Ge @ Ge.conj().T, C["phil1"]) - np.einsum("pr,st", Ge @ Ge.conj().T, C["phil3"])) - np.einsum("pt,sr", Ge @ Ge.conj().T, C["phil3"]) - 1/2*np.einsum("sv,tw,prvw", Ge, np.conj(Ge), C["le"]) + np.einsum("pv,vrst", Gammal, C["ll"]) + np.einsum("pvst,vr", C["ll"], Gammal) - 1/6*gp**2*np.einsum("pr,st", C["phil1"], I3) - 1/6*g**2*(np.einsum("pr,st", C["phil3"], I3) - 2*np.einsum("pt,sr", C["phil3"], I3)) + 1/3*gp**2*(2*np.einsum("stww,pr", C["ll"], I3) + np.einsum("swwt,pr", C["ll"], I3)) - 1/3*g**2*np.einsum("swwt,pr", C["ll"], I3) + 2/3*g**2*np.einsum("pwwt,sr", C["ll"], I3) - 1/3*gp**2*np.einsum("stww,pr", C["lq1"], I3) - g**2*np.einsum("stww,pr", C["lq3"], I3) + 2*g**2*np.einsum("srww,tp", C["lq3"], I3) + 1/3*gp**2*( - 2*np.einsum("stww,pr", C["lu"], I3) + np.einsum("stww,pr", C["ld"], I3) + np.einsum("stww,pr", C["le"], I3)) - 1/2*(np.einsum("st,pr", Ge @ Ge.conj().T, C["phil1"]) - np.einsum("st,pr", Ge @ Ge.conj().T, C["phil3"])) - np.einsum("sr,pt", Ge @ Ge.conj().T, C["phil3"]) - 1/2*np.einsum("pv,rw,stvw", Ge, np.conj(Ge), C["le"]) + np.einsum("sv,vtpr", Gammal, C["ll"]) + np.einsum("svpr,vt", C["ll"], Gammal) + 6*g**2*np.einsum("ptsr", C["ll"]) + 3*(gp**2 - g**2)*np.einsum("prst", C["ll"])
@@ -322,7 +233,7 @@ def beta(C, HIGHSCALE):
 
     """Dimension-5"""
     Beta["llphiphi"] = (2*Lambda - 3*g**2 + 2*GammaH)*C["llphiphi"]-3/2*(C["llphiphi"] @ Ge @ Ge.conj().T + Ge.conj() @ Ge.T @ C["llphiphi"])
-      
+
     return Beta
 
 def beta_array(C, HIGHSCALE):

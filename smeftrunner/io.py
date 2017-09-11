@@ -114,7 +114,7 @@ def wc_lha2dict(lha):
             C[k] = dict(lha['BLOCK'][block]['values'])[i]
         except KeyError:
             C[k] = 0
-    for k in beta.WC_keys_2f:
+    for k in definitions.WC_keys_2f:
         try:
             C[k] = lha2matrix(lha['BLOCK']['WC' + k.upper()]['values'], (3,3)).real
         except KeyError:
@@ -123,7 +123,7 @@ def wc_lha2dict(lha):
             C[k] = C[k] + 1j*lha2matrix(lha['BLOCK']['IMWC' + k.upper()]['values'], (3,3))
         except KeyError:
             pass
-    for k in beta.WC_keys_4f:
+    for k in definitions.WC_keys_4f:
         try:
             C[k] = lha2matrix(lha['BLOCK']['WC' + k.upper()]['values'], (3,3,3,3))
         except KeyError:
@@ -143,7 +143,7 @@ def wc_dict2lha(wc):
             d[block] = defaultdict(list)
         if wc[name] != 0:
             d[block]['values'].append([i, wc[name].real])
-    for name in beta.WC_keys_2f:
+    for name in definitions.WC_keys_2f:
         reblock = 'WC'+name.upper()
         imblock = 'IMWC'+name.upper()
         if reblock not in d:
@@ -156,7 +156,7 @@ def wc_dict2lha(wc):
                     d[reblock]['values'].append([i+1, j+1, float(wc[name][i, j].real)])
                 if wc[name][i, j].imag != 0:
                     d[imblock]['values'].append([i+1, j+1, float(wc[name][i, j].imag)])
-    for name in beta.WC_keys_4f:
+    for name in definitions.WC_keys_4f:
         reblock = 'WC'+name.upper()
         imblock = 'IMWC'+name.upper()
         if reblock not in d:

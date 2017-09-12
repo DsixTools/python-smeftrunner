@@ -19,8 +19,7 @@ C["g"], C["gp"], C["gs"], C["Lambda"], C["m2"] = rpar[:5]
 C["Gu"] = np.array(rpar[5]) + 1j*np.array(rpar[6])
 C["Gd"] = np.array(rpar[7]) + 1j*np.array(rpar[8])
 C["Ge"] = np.array(rpar[9]) + 1j*np.array(rpar[10])
-C["Theta"] = 0
-C["Thetap"] = 0
+C["Theta"] = C["Thetap"] = 0
 C["Thetas"] = 0
 HIGHSCALE = 1000
 
@@ -49,11 +48,11 @@ class TestBeta(unittest.TestCase):
         for i, n in enumerate(C0):
             self.assertAlmostEqual(betas_re[0][i]/my_beta[n].real, 1, places=4)
         for i, n in enumerate(C2):
-            npt.assert_array_almost_equal(betas_re[1][i]/my_beta[n].real, np.ones((3,3)), decimal=4)
+            npt.assert_array_almost_equal(betas_re[1][i]/my_beta[n].real, np.ones((3,3)), decimal=2)
         for i, n in enumerate(C4):
             npt.assert_array_almost_equal(betas_re[2][i]/my_beta[n].real, np.ones((3,3,3,3)), decimal=2)
         for i, n in enumerate(C2):
-            npt.assert_array_almost_equal(betas_im[1][i]/my_beta[n].imag, np.ones((3,3)), decimal=4)
+            npt.assert_array_almost_equal(betas_im[1][i]/my_beta[n].imag, np.ones((3,3)), decimal=2)
         for i, n in enumerate(C4):
             npt.assert_array_almost_equal(betas_im[2][i]/my_beta[n].imag, np.ones((3,3,3,3)), decimal=2)
 

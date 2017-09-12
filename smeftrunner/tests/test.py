@@ -7,10 +7,10 @@ import pkgutil
 import pylha
 
 # read in JSON files with numerical input & output of Mathematica code
-rpar = json.loads(pkgutil.get_data('smeftrunner', 'tests/data/random_par.json').decode('utf-8'))
-rC = json.loads(pkgutil.get_data('smeftrunner', 'tests/data/random_wc.json').decode('utf-8'))
-betas_re = json.loads(pkgutil.get_data('smeftrunner', 'tests/data/betas_re.json').decode('utf-8'))
-betas_im = json.loads(pkgutil.get_data('smeftrunner', 'tests/data/betas_im.json').decode('utf-8'))
+rpar = json.loads(pkgutil.get_data('smeftrunner', 'tests/data_with_dim5/random_par.json').decode('utf-8'))
+rC = json.loads(pkgutil.get_data('smeftrunner', 'tests/data_with_dim5/random_wc.json').decode('utf-8'))
+betas_re = json.loads(pkgutil.get_data('smeftrunner', 'tests/data_with_dim5/betas_re.json').decode('utf-8'))
+betas_im = json.loads(pkgutil.get_data('smeftrunner', 'tests/data_with_dim5/betas_im.json').decode('utf-8'))
 
 
 # reconstruct SM parameters

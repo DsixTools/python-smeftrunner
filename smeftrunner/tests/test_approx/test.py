@@ -1,5 +1,8 @@
 import unittest
 import pylha
+import os
+
+print (os.getcwd())
 
 
 """get datas as a dictionary"""

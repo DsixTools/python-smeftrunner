@@ -18,8 +18,8 @@ with open('smeftrunner/tests/data/SMInput-CPV.dat', 'r') as f1:
 C_out = smeft.rgevolve(scale_out=160)
 C_out_approx = smeft.rgevolve_leadinglog(scale_out=160)
 
-smeft.dump(C_out, open('python-smeftrunner/smeftrunner/tests/data/my_output_file.dat', 'w'))
-smeft.dump(C_out, open('python-smeftrunner/smeftrunner/tests/data/my_output_file_approx.dat', 'w'))
+smeft.dump(C_out, open('smeftrunner/tests/data/my_output_file.dat', 'w'))
+smeft.dump(C_out, open('smeftrunner/tests/data/my_output_file_approx.dat', 'w'))
 
 
 

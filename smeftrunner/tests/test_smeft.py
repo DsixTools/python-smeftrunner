@@ -10,16 +10,16 @@ smeft = SMEFT()
 smeft.scale_in = 1e4
 smeft.scale_high = 1e4
 
-with open('data/SMInput-CPV.dat', 'r') as f1:
-  with open('data/WCsInput-CPV-SMEFT.dat', 'r') as f2:
+with open('smeftrunner/tests/data/SMInput-CPV.dat', 'r') as f1:
+  with open('smeftrunner/tests/data/WCsInput-CPV-SMEFT.dat', 'r') as f2:
     smeft.load_initial((f1, f2,))
     
 
 C_out = smeft.rgevolve(scale_out=160)
 C_out_approx = smeft.rgevolve_leadinglog(scale_out=160)
 
-smeft.dump(C_out, open('data/my_output_file.dat', 'w'))
-smeft.dump(C_out, open('data/my_output_file_approx.dat', 'w'))
+smeft.dump(C_out, open('smeftrunner/tests/data/my_output_file.dat', 'w'))
+smeft.dump(C_out, open('smeftrunner/tests/data/my_output_file_approx.dat', 'w'))
 
 
 
@@ -34,11 +34,11 @@ def BLOCKdict(streams):
     return d
 
 #from python
-with open('data/my_output_file.dat', 'r') as f:
+with open('smeftrunner/tests/data/my_output_file.dat', 'r') as f:
     py_results = BLOCKdict((f,))
 
 #from mathematica
-with open('data/Output_SMEFTrunner.dat', 'r') as f:
+with open('smeftrunner/tests/data/Output_SMEFTrunner.dat', 'r') as f:
     ma_results = BLOCKdict((f,))
 
 
@@ -65,7 +65,7 @@ else:
     blocks = OrderedDict()
     for i in range(len(list(diffma))):
         blocks[list(diffma)[i]]=ma_results[list(diffma)[i]]
-    pylha.dump({'BLOCK': blocks}, 'lha', open('blocks_diffences_ma.dat', 'w'))
+    pylha.dump({'BLOCK': blocks}, 'lha', open('smeftrunner/tests/blocks_diffences_ma.dat', 'w'))
     print ("The differences were written in a file 'blocks_diffences_ma.dat'")            
 
     
@@ -107,7 +107,7 @@ class TestValues(unittest.TestCase):
                                 defaultblocks[block]['values']=[]
                             defaultblocks[block]['values'].append(py_value[:dim]+default)
         defaultblocks = OrderedDict(sorted(defaultblocks.items()))
-        pylha.dump({'BLOCK': defaultblocks}, 'lha', open('defaultblocks_py_ma_quotient.dat', 'w'))
+        pylha.dump({'BLOCK': defaultblocks}, 'lha', open('smeftrunner/tests/defaultblocks_py_ma_quotient.dat', 'w'))
         print ("The different values were written in a file 'defaultblocks_py_ma_quotient.dat'")                 
                             
 if __name__ == '__main__':

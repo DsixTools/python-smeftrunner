@@ -15,11 +15,11 @@ def BLOCKdict(streams):
 
 
 #exact values
-with open('data/my_output_file.dat', 'r') as f:
+with open('smeftrunner/data/my_output_file.dat', 'r') as f:
     results = BLOCKdict((f,))
 
 #approx values
-with open('data/my_output_file_approx.dat', 'r') as f:
+with open('smeftrunner/data/my_output_file_approx.dat', 'r') as f:
     results_approx = BLOCKdict((f,))
 
 

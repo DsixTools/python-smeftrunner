@@ -56,17 +56,14 @@ class TestSymm(unittest.TestCase):
                 npt.assert_array_equal(v, v.transpose((1, 0, 3, 2)).conj())
             # check special case ee
             elif i in definitions.C_symm_keys[6]:
-                # npt.assert_array_equal(v, v.transpose((2, 3, 0, 1)))
-                print(tuple(np.array(np.nonzero(v-v.transpose((2, 3, 0, 1)))).T))
-                # npt.assert_array_equal(v, v.transpose((0, 3, 2, 1)))
-                print(tuple(np.array(np.nonzero(v-v.transpose((0, 3, 2, 1)))).T))
-                # npt.assert_array_equal(v, v.transpose((2, 1, 0, 3)))
-                print(tuple(np.array(np.nonzero(v-v.transpose((2, 1, 0, 3)))).T))
+                npt.assert_array_equal(v, v.transpose((2, 3, 0, 1)))
+                npt.assert_array_equal(v, v.transpose((0, 3, 2, 1)))
+                npt.assert_array_equal(v, v.transpose((2, 1, 0, 3)))
             # check special case qque
             elif i in definitions.C_symm_keys[7]:
                 npt.assert_array_equal(v, v.transpose((1, 0, 2, 3)))
             # check special case qqql
-            elif i in definitions.C_symm_keys[8]:
+            # elif i in definitions.C_symm_keys[8]:
                 # see eq. (10) of arXiv:1405.0486
-                # npt.assert_array_equal(v + v.transpose((1, 0, 2, 3)), v.transpose((2, 0, 1, 3)) + v.transpose((2, 1, 0, 3)))
+                npt.assert_array_equal(v + v.transpose((1, 0, 2, 3)), v.transpose((2, 0, 1, 3)) + v.transpose((2, 1, 0, 3)))
                 print(tuple(np.array(np.nonzero(v + v.transpose((1, 0, 2, 3))- (v.transpose((2, 0, 1, 3)) + v.transpose((2, 1, 0, 3))))).T))

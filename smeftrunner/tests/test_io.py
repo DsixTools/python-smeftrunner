@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 import numpy.testing as npt
-from smeftrunner import SMEFT, io
+from smeftrunner import SMEFT, io, definitions
 import pkgutil
 import pylha
 
@@ -26,9 +26,9 @@ class TestIO(unittest.TestCase):
         smeft = SMEFT()
         smeft.load_initial((wcout,))
         for k in C:
-            npt.assert_array_equal(C[k], smeft.C_in[k], err_msg="Failed for {}".format(k))
+            npt.assert_array_equal(definitions.symmetrize(C)[k], smeft.C_in[k], err_msg="Failed for {}".format(k))
         for k in CSM:
-            npt.assert_array_equal(CSM[k], smeft.C_in[k], err_msg="Failed for {}".format(k))
+            npt.assert_array_equal(definitions.symmetrize(CSM)[k], smeft.C_in[k], err_msg="Failed for {}".format(k))
         CSM2 = io.sm_lha2dict(io.sm_dict2lha(CSM))
         for k in CSM:
             npt.assert_array_equal(CSM[k], CSM2[k], err_msg="Failed for {}".format(k))

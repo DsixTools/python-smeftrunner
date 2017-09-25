@@ -2,6 +2,7 @@
 
 from . import rge
 from . import io
+from . import definitions
 import pylha
 
 class SMEFT(object):
@@ -36,6 +37,7 @@ class SMEFT(object):
         C = io.wc_lha2dict(d)
         sm = io.sm_lha2dict(d)
         C.update(sm)
+        C = definitions.symmetrize(C)
         self.C_in = C
 
     def dump(self, C_out, stream=None, fmt='lha'):

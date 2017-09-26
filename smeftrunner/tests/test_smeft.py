@@ -1,29 +1,22 @@
 import unittest
 from collections import OrderedDict, defaultdict
+import numpy as np
+import numpy.testing as npt
 import pylha
 from smeftrunner import SMEFT
+import pkgutil
 
-
-"""get the python output file"""
 smeft = SMEFT()
-
 smeft.scale_in = 1e4
 smeft.scale_high = 1e4
 
-with open('smeftrunner/tests/data/SMInput-CPV.dat', 'r') as f1:
-  with open('smeftrunner/tests/data/WCsInput-CPV-SMEFT.dat', 'r') as f2:
-    smeft.load_initial((f1, f2,))
-    
+f1 = pkgutil.get_data('smeftrunner', 'tests/data/SMInput-CPV.dat').decode('utf-8')
+f2 = pkgutil.get_data('smeftrunner', 'tests/data/WCsInput-CPV-SMEFT.dat').decode('utf-8')
+smeft.load_initial((f1, f2,))
 
 C_out = smeft.rgevolve(scale_out=160)
-C_out_approx = smeft.rgevolve_leadinglog(scale_out=160)
 
-smeft.dump(C_out, open('smeftrunner/tests/data/my_output_file.dat', 'w'))
-smeft.dump(C_out, open('smeftrunner/tests/data/my_output_file_approx.dat', 'w'))
-
-
-
-"""get datas as a dictionary"""
+# get datas as a dictionary
 def BLOCKdict(streams):
     d = {}
     for stream in streams:
@@ -33,82 +26,42 @@ def BLOCKdict(streams):
         d.update(s['BLOCK'])
     return d
 
-#from python
-with open('smeftrunner/tests/data/my_output_file.dat', 'r') as f:
-    py_results = BLOCKdict((f,))
+py_results = BLOCKdict((smeft.dump(C_out),))
 
-#from mathematica
-with open('smeftrunner/tests/data/Output_SMEFTrunner.dat', 'r') as f:
-    ma_results = BLOCKdict((f,))
+f = pkgutil.get_data('smeftrunner', 'tests/data/Output_SMEFTrunner.dat').decode('utf-8')
+ma_results = BLOCKdict((f,))
 
 
-
-  
-"""check the keys of blocks"""
-if set(py_results.keys()) is set(ma_results.keys()):
-    print ("Blocks equal")
-else:
-    print ("Blocks not equal!")
-    #unique blocks from python
-    diffpy = set(py_results.keys())-set(ma_results.keys())
-    if len(diffpy) == 0:
-        print ("no unique block from python!")
-    else:
-        print ("unique blocks from python: %s" %diffpy)
-    #unique blocks from mathematica
-    diffma = set(ma_results.keys())-set(py_results.keys())
-    if len(diffma) == 0:
-        print ("no unique block from mathematica!")
-    else:
-        print ("unique blocks from mathematica: %s" %diffma)    #why is there 'WCLLPHIPHI'?
-    #we also want to know the differences
-    blocks = OrderedDict()
-    for i in range(len(list(diffma))):
-        blocks[list(diffma)[i]]=ma_results[list(diffma)[i]]
-    pylha.dump({'BLOCK': blocks}, 'lha', open('smeftrunner/tests/blocks_diffences_ma.dat', 'w'))
-    print ("The differences were written in a file 'blocks_diffences_ma.dat'")            
-
-    
+class TestSMEFT(unittest.TestCase):
+    def test_keys(self):
+        # check the keys of blocks
+        for k in ma_results:
+            # SCALES, OPTIONS blocks not implemented yet
+            if k not in py_results and k not in ['SCALES', 'OPTIONS']:
+                for iv in ma_results[k]['values']:
+                    # if key is not in py_results, values must be zero!
+                    self.assertEqual(iv[-1], 0, msg='Entry {} in {} nonzero'.format(iv[:-1], k))
 
 
-"""check the values of the common blocks"""
-blocks_co = set(py_results.keys()) & set(ma_results.keys())
-print ("common blocks: %s" %blocks_co)
-print ("check values:")
-class TestValues(unittest.TestCase):
     def test_values(self):
+        # check the values of the common blocks
+        blocks_co = set(py_results.keys()) & set(ma_results.keys())
         defaultblocks = defaultdict(list)
         for block in blocks_co:
             #check dimension
-            self.assertEqual(len(py_results[block]['values'][0]), len(ma_results[block]['values'][0])) 
+            self.assertEqual(len(py_results[block]['values'][0]),
+                             len(ma_results[block]['values'][0]))
             #check values
-            dim=len(py_results[block]['values'][0])-1
-            for py_value in py_results[block]['values']:
-                for ma_value in ma_results[block]['values']:
-                    if list(py_value[:dim]) == list(ma_value[:dim]):
-                        try:
-                            try:
-                                self.assertAlmostEqual(abs(py_value[dim]), 0, places=5)
-                                self.assertAlmostEqual(abs(ma_value[dim]), 0, places=5)
-                            except:
-                                py_value[dim]/ma_value[dim]
-                                #check: print (block, value[:dim], value[dim], value_approx[dim])
-                                self.assertAlmostEqual(py_value[dim]/ma_value[dim], 1, places=1)                                    
-                        except:
-                            #we want to know the default values
-                            default = [py_value[dim], ma_value[dim]]
-                            try:
-                                py_value[dim]/ma_value[dim]
-                                default.append(py_value[dim]/ma_value[dim])
-                            except:
-                                default.append('NA')
-                            if block not in defaultblocks.keys():
-                                defaultblocks[block]=defaultdict(list)
-                                defaultblocks[block]['values']=[]
-                            defaultblocks[block]['values'].append(py_value[:dim]+default)
-        defaultblocks = OrderedDict(sorted(defaultblocks.items()))
-        pylha.dump({'BLOCK': defaultblocks}, 'lha', open('smeftrunner/tests/defaultblocks_py_ma_quotient.dat', 'w'))
-        print ("The different values were written in a file 'defaultblocks_py_ma_quotient.dat'")                 
-                            
-if __name__ == '__main__':
-    unittest.main()        
+            # turn into dicts for easier comparison
+            py_dict = {tuple(v[:-1]): v[-1] for v in py_results[block]['values']}
+            ma_dict = {tuple(v[:-1]): v[-1] for v in ma_results[block]['values']}
+            # py_dict should contain LESS (vanishing) OR EQUAL keys compared to ma_dict
+            self.assertSetEqual(set(py_dict.keys())-set(ma_dict.keys()), set(), msg=block)
+            for k in (set(py_dict.keys()) | set(ma_dict.keys())):
+                if k not in py_dict:
+                    self.assertAlmostEqual(ma_dict[k], 0, delta=1e-6,
+                        msg='Entry {} in {} nonzero'.format(k, block))
+                else:
+                    self.assertAlmostEqual(ma_dict[k], py_dict[k],
+                        delta=max(1e-3, 1e-5*py_dict[k]), # 1e-3 absolute, 1e-5 relative
+                        msg='Entry {} in {} does not agree: {} != {}'.format(k, block, ma_dict[k], py_dict[k]))

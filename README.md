@@ -70,3 +70,13 @@ C_out = smeft.rgevolve_leadinglog(scale_out=160)
 ```
 
 This is much faster but less precise than the exact solution.
+
+## Command-line interface
+
+While using `smeftrunner` directly as a Python module is the most flexible option, the package also provides a convenient command-line script `smeftrunner-cli` that performs the steps described above in a single line. It is used like
+
+```bash
+smeftrunner-cli 1e16 160 my_sm_input.dat my_wc_input.dat --output my_output_file.dat
+```
+
+where the first number is the input scale (assumed to be equal to the high scale), the second number is the output scale, the following files are an arbitrary number of input files, and the last options specifies an output file name. If omitted, the output is printed to the console.

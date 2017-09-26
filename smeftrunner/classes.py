@@ -4,6 +4,7 @@ from . import rge
 from . import io
 from . import definitions
 import pylha
+from collections import OrderedDict
 
 class SMEFT(object):
     """Parameter point in the Standard Model Effective Field Theory."""
@@ -40,13 +41,19 @@ class SMEFT(object):
         C = definitions.symmetrize(C)
         self.C_in = C
 
-    def dump(self, C_out, stream=None, fmt='lha', skip_redundant=True):
+    def dump(self, C_out, scale_out=None, stream=None, fmt='lha', skip_redundant=True):
         """Return a string representation of the parameters and Wilson
         coefficients `C_out` in DSixTools output format. If `stream` is
         specified, export it to a file. `fmt` defaults to `lha` (the SLHA-like
         DSixTools format), but can also be `json` or `yaml` (see the
         pylha documentation)."""
-        C = io.sm_dict2lha(C_out)['BLOCK']
+        C = OrderedDict()
+        if scale_out is not None:
+            C['SCALES'] = {'values': [[1, self.scale_high], [2, scale_out]]}
+        else:
+            C['SCALES'] = {'values': [[1, self.scale_high]]}
+        sm = io.sm_dict2lha(C_out)['BLOCK']
+        C.update(sm)
         wc = io.wc_dict2lha(C_out, skip_redundant=skip_redundant)['BLOCK']
         C.update(wc)
         return pylha.dump({'BLOCK': C}, fmt=fmt, stream=stream)

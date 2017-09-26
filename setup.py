@@ -19,5 +19,10 @@ setup(name='smeftrunner',
       'smeftrunner':['tests/data/*',
               ]
       },
+      entry_points={
+        'console_scripts': [
+            'smeftrunner-cli = smeftrunner.cli:main',
+        ]
+      },
       install_requires=['scipy', 'numpy', 'pylha', 'pyyaml'],
     )

@@ -134,7 +134,7 @@ def wc_lha2dict(lha):
             pass
     return C
 
-def wc_dict2lha(wc, skip_redundant=True):
+def wc_dict2lha(wc, skip_redundant=True, skip_zero=True):
     """Convert a a dictionary of Wilson coefficients into
     a dictionary that pylha can convert into a DSixTools WC output file."""
     d = OrderedDict()
@@ -155,9 +155,9 @@ def wc_dict2lha(wc, skip_redundant=True):
                 if (i, j) in definitions.redundant_elements[name] and skip_redundant:
                     # skip redundant elements
                     continue
-                if wc[name][i, j].real != 0:
+                if wc[name][i, j].real != 0 or not skip_zero:
                     d[reblock]['values'].append([i+1, j+1, float(wc[name][i, j].real)])
-                if wc[name][i, j].imag != 0:
+                if wc[name][i, j].imag != 0 or not skip_zero:
                     # omit Im parts that have to vanish by symmetry
                     if (i, j) not in definitions.vanishing_im_parts[name]:
                         d[imblock]['values'].append([i+1, j+1, float(wc[name][i, j].imag)])
@@ -175,9 +175,9 @@ def wc_dict2lha(wc, skip_redundant=True):
                         if (i, j, k, l) in definitions.redundant_elements[name] and skip_redundant:
                             # skip redundant elements
                             continue
-                        if wc[name][i, j, k, l].real != 0:
+                        if wc[name][i, j, k, l].real != 0 or not skip_zero:
                             d[reblock]['values'].append([i+1, j+1, k+1, l+1, float(wc[name][i, j, k, l].real)])
-                        if wc[name][i, j, k, l].imag != 0:
+                        if wc[name][i, j, k, l].imag != 0 or not skip_zero:
                             # omit Im parts that have to vanish by symmetry
                             if (i, j, k, l) not in definitions.vanishing_im_parts[name]:
                                 d[imblock]['values'].append([i+1, j+1, k+1, l+1, float(wc[name][i, j, k, l].imag)])

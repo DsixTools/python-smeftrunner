@@ -40,14 +40,14 @@ class SMEFT(object):
         C = definitions.symmetrize(C)
         self.C_in = C
 
-    def dump(self, C_out, stream=None, fmt='lha'):
+    def dump(self, C_out, stream=None, fmt='lha', skip_redundant=True):
         """Return a string representation of the parameters and Wilson
         coefficients `C_out` in DSixTools output format. If `stream` is
         specified, export it to a file. `fmt` defaults to `lha` (the SLHA-like
         DSixTools format), but can also be `json` or `yaml` (see the
         pylha documentation)."""
         C = io.sm_dict2lha(C_out)['BLOCK']
-        wc = io.wc_dict2lha(C_out)['BLOCK']
+        wc = io.wc_dict2lha(C_out, skip_redundant=skip_redundant)['BLOCK']
         C.update(wc)
         return pylha.dump({'BLOCK': C}, fmt=fmt, stream=stream)
 

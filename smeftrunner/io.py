@@ -134,7 +134,7 @@ def wc_lha2dict(lha):
             pass
     return C
 
-def wc_dict2lha(wc):
+def wc_dict2lha(wc, skip_redundant=True):
     """Convert a a dictionary of Wilson coefficients into
     a dictionary that pylha can convert into a DSixTools WC output file."""
     d = OrderedDict()
@@ -152,10 +152,15 @@ def wc_dict2lha(wc):
             d[imblock] = defaultdict(list)
         for i in range(3):
             for j in range(3):
+                if (i, j) in definitions.redundant_elements[name] and skip_redundant:
+                    # skip redundant elements
+                    continue
                 if wc[name][i, j].real != 0:
                     d[reblock]['values'].append([i+1, j+1, float(wc[name][i, j].real)])
                 if wc[name][i, j].imag != 0:
-                    d[imblock]['values'].append([i+1, j+1, float(wc[name][i, j].imag)])
+                    # omit Im parts that have to vanish by symmetry
+                    if (i, j) not in definitions.vanishing_im_parts[name]:
+                        d[imblock]['values'].append([i+1, j+1, float(wc[name][i, j].imag)])
     for name in definitions.WC_keys_4f:
         reblock = 'WC'+name.upper()
         imblock = 'IMWC'+name.upper()
@@ -167,10 +172,15 @@ def wc_dict2lha(wc):
             for j in range(3):
                 for k in range(3):
                     for l in range(3):
+                        if (i, j, k, l) in definitions.redundant_elements[name] and skip_redundant:
+                            # skip redundant elements
+                            continue
                         if wc[name][i, j, k, l].real != 0:
                             d[reblock]['values'].append([i+1, j+1, k+1, l+1, float(wc[name][i, j, k, l].real)])
                         if wc[name][i, j, k, l].imag != 0:
-                            d[imblock]['values'].append([i+1, j+1, k+1, l+1, float(wc[name][i, j, k, l].imag)])
+                            # omit Im parts that have to vanish by symmetry
+                            if (i, j, k, l) not in definitions.vanishing_im_parts[name]:
+                                d[imblock]['values'].append([i+1, j+1, k+1, l+1, float(wc[name][i, j, k, l].imag)])
     # remove empty blocks
     empty = []
     for block in d:

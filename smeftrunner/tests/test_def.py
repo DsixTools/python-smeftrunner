@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 import numpy.testing as npt
-from smeftrunner import definitions
+from smeftrunner import definitions, beta
 import test_beta
 
 C = test_beta.C.copy()
@@ -66,3 +66,23 @@ class TestSymm(unittest.TestCase):
             elif i in definitions.C_symm_keys[8]:
                 # see eq. (10) of arXiv:1405.0486
                 npt.assert_array_almost_equal(v + v.transpose((1, 0, 2, 3)), v.transpose((1, 2, 0, 3)) + v.transpose((2, 1, 0, 3)), decimal=15)
+
+    def test_redundant(self):
+        # generate parameter dict filled with unique, ascending numbers
+        C_num = beta.C_array2dict(np.arange(0, 9999, dtype=complex))
+        C_num_symm = definitions.symmetrize(C_num)
+        for k, el in definitions.redundant_elements.items():
+            for e in el:
+                # check that the elements in the symmetrized array
+                # are NOT equal to the original ones IF they belong
+                # to the redundant ones
+                self.assertNotEqual(C_num[k][e].real, C_num_symm[k][e].real)
+        # generate parameter dict filled with unique, ascending IMAGINARY numbers
+        C_num = beta.C_array2dict(1j*np.arange(0, 9999, dtype=complex))
+        C_num_symm = definitions.symmetrize(C_num)
+        for k, el in definitions.vanishing_im_parts.items():
+            for e in el:
+                # original im parts are NOT zero
+                self.assertNotEqual(C_num[k][e].imag, 0)
+                # symmetrized im parts ARE zero
+                self.assertEqual(C_num_symm[k][e].imag, 0)

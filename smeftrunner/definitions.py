@@ -531,7 +531,9 @@ def symmetrize_9(b):
 def symmetrize(C):
     C_symm = {}
     for i, v in C.items():
-        if i in C_symm_keys[0] + C_symm_keys[1] + C_symm_keys[3]:
+        if i in C_symm_keys[0]:
+            C_symm[i] = v.real
+        elif i in C_symm_keys[1] + C_symm_keys[3]:
             C_symm[i] = v # nothing to do
         elif i in C_symm_keys[2]:
             C_symm[i] = symmetrize_2(C[i])

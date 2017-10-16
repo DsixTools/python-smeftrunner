@@ -1725,3 +1725,83 @@ vanishing_im_parts = {'G': [],
   (0, 0, 0, 0),
   (0, 0, 1, 1),
   (0, 0, 2, 2)]}
+
+def msvd(m):
+  """Modified singular value decomposition.
+
+  Returns U, S, V where Udagger M V = diag(S) and the singular values
+  are sorted in ascending order (small to large).
+  """
+  u, s, vdgr = np.linalg.svd(m)
+  order = s.argsort()
+  # reverse the n first columns of u
+  s = s[order]
+  u= u[:,order]
+  vdgr = vdgr[order]
+  return u, s, vdgr.conj().T
+
+def argdet(U):
+    return np.angle(np.linalg.det(U))
+
+def flavor_rotation(C_in, Uq, Uu, Ud, Ul, Ue):
+    """Gauge-invariant $U(3)^5$ flavor rotation of all Wilson coefficients and
+    SM parameters."""
+    C = {}
+    # shift of theta terms, see 0907.4763
+    C['Thetas'] = C_in['Thetas'] - 2*argdet(Uq) + argdet(Uu) + argdet(Ud)
+    C['Theta'] = C_in['Theta'] - 3*argdet(Uq) - argdet(Ul)
+    C['Thetap'] = ( C_in['Thetap'] - (1/6)*argdet(Uq) + (4/3)*argdet(Uu) + (1/3)*argdet(Ud)
+                                   - (1/2)*argdet(Ul) + argdet(Ue))
+    # nothing to do for purely bosonic operators and bosonic SM parameters
+    for k in WC_keys_0f + ['g', 'gp', 'gs', 'Lambda', 'm2']:
+        C[k] = C_in[k]
+    # see 1704.03888 table 4 (but staying SU(2) invariant here)
+    # LR
+    for k in ['ephi', 'eW', 'eB', 'Ge']:
+        C[k] = Ul.conj().T @ C_in[k] @ Ue
+    for k in ['uphi', 'uW', 'uB', 'uG', 'Gu']:
+        C[k] = Uq.conj().T @ C_in[k] @ Uu
+    for k in ['dphi', 'dW', 'dB', 'dG', 'Gd']:
+        C[k] = Uq.conj().T @ C_in[k] @ Ud
+    # LL
+    for k in ['phil1', 'phil3']:
+        C[k] = Ul.conj().T @ C_in[k] @ Ul
+    for k in ['phiq1', 'phiq3']:
+        C[k] = Uq.conj().T @ C_in[k] @ Uq
+    C['llphiphi'] = Ul.T @ C_in['llphiphi'] @ Ul
+    # RR
+    C['phie'] = Ue.conj().T @ C_in['phie'] @ Ue
+    C['phiu'] = Uu.conj().T @ C_in['phiu'] @ Uu
+    C['phid'] = Ud.conj().T @ C_in['phid'] @ Ud
+    C['phiud'] = Uu.conj().T @ C_in['phiud'] @ Ud
+    # 4-fermion
+    C['ll'] = np.einsum('jb,ld,ia,kc,ijkl->abcd', Ul, Ul, Ul.conj(), Ul.conj(), C_in['ll'])
+    C['ee'] = np.einsum('jb,ld,ia,kc,ijkl->abcd', Ue, Ue, Ue.conj(), Ue.conj(), C_in['ee'])
+    C['le'] = np.einsum('jb,ld,ia,kc,ijkl->abcd', Ul, Ue, Ul.conj(), Ue.conj(), C_in['le'])
+    C['qq1'] = np.einsum('jb,ld,ia,kc,ijkl->abcd', Uq, Uq, Uq.conj(), Uq.conj(), C_in['qq1'])
+    C['qq3'] = np.einsum('jb,ld,ia,kc,ijkl->abcd', Uq, Uq, Uq.conj(), Uq.conj(), C_in['qq3'])
+    C['dd'] = np.einsum('jb,ld,ia,kc,ijkl->abcd', Ud, Ud, Ud.conj(), Ud.conj(), C_in['dd'])
+    C['uu'] = np.einsum('jb,ld,ia,kc,ijkl->abcd', Uu, Uu, Uu.conj(), Uu.conj(), C_in['uu'])
+    C['ud1'] = np.einsum('jb,ld,ia,kc,ijkl->abcd', Uu, Ud, Uu.conj(), Ud.conj(), C_in['ud1'])
+    C['ud8'] = np.einsum('jb,ld,ia,kc,ijkl->abcd', Uu, Ud, Uu.conj(), Ud.conj(), C_in['ud8'])
+    C['qu1'] = np.einsum('jb,ld,ia,kc,ijkl->abcd', Uq, Uu, Uq.conj(), Uu.conj(), C_in['qu1'])
+    C['qu8'] = np.einsum('jb,ld,ia,kc,ijkl->abcd', Uq, Uu, Uq.conj(), Uu.conj(), C_in['qu8'])
+    C['qd1'] = np.einsum('jb,ld,ia,kc,ijkl->abcd', Uq, Ud, Uq.conj(), Ud.conj(), C_in['qd1'])
+    C['qd8'] = np.einsum('jb,ld,ia,kc,ijkl->abcd', Uq, Ud, Uq.conj(), Ud.conj(), C_in['qd8'])
+    C['quqd1'] = np.einsum('jb,ld,ia,kc,ijkl->abcd', Uu, Ud, Uq.conj(), Uq.conj(), C_in['quqd1'])
+    C['quqd8'] = np.einsum('jb,ld,ia,kc,ijkl->abcd', Uu, Ud, Uq.conj(), Uq.conj(), C_in['quqd8'])
+    C['lq1'] = np.einsum('jb,ld,ia,kc,ijkl->abcd', Ul, Uq, Ul.conj(), Uq.conj(), C_in['lq1'])
+    C['lq3'] = np.einsum('jb,ld,ia,kc,ijkl->abcd', Ul, Uq, Ul.conj(), Uq.conj(), C_in['lq3'])
+    C['ld'] = np.einsum('jb,ld,ia,kc,ijkl->abcd', Ul, Ud, Ul.conj(), Ud.conj(), C_in['ld'])
+    C['lu'] = np.einsum('jb,ld,ia,kc,ijkl->abcd', Ul, Uu, Ul.conj(), Uu.conj(), C_in['lu'])
+    C['qe'] = np.einsum('jb,ld,ia,kc,ijkl->abcd', Uq, Ue, Uq.conj(), Ue.conj(), C_in['qe'])
+    C['ed'] = np.einsum('jb,ld,ia,kc,ijkl->abcd', Ue, Ud, Ue.conj(), Ud.conj(), C_in['ed'])
+    C['eu'] = np.einsum('jb,ld,ia,kc,ijkl->abcd', Ue, Uu, Ue.conj(), Uu.conj(), C_in['eu'])
+    C['ledq'] = np.einsum('jb,ld,ia,kc,ijkl->abcd', Ue, Uq, Ul.conj(), Ud.conj(), C_in['ledq'])
+    C['lequ1'] = np.einsum('jb,ld,ia,kc,ijkl->abcd', Ue, Uu, Ul.conj(), Uq.conj(), C_in['lequ1'])
+    C['lequ3'] = np.einsum('jb,ld,ia,kc,ijkl->abcd', Ue, Uu, Ul.conj(), Uq.conj(), C_in['lequ3'])
+    C['duql'] = np.einsum('jb,ld,ia,kc,ijkl->abcd', Uu, Ul, Ud, Uq, C_in['duql'])
+    C['qque'] = np.einsum('jb,ld,ia,kc,ijkl->abcd', Uq, Ue, Uq, Uu, C_in['qque'])
+    C['qqql'] = np.einsum('jb,ld,ia,kc,ijkl->abcd', Uq, Ul, Uq, Uq, C_in['qqql'])
+    C['duue'] = np.einsum('jb,ld,ia,kc,ijkl->abcd', Uu, Ue, Ud, Uu, C_in['duue'])
+    return C

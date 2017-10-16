@@ -5,6 +5,7 @@ from . import io
 from . import definitions
 import pylha
 from collections import OrderedDict
+from math import sqrt
 
 class SMEFT(object):
     """Parameter point in the Standard Model Effective Field Theory."""
@@ -91,3 +92,17 @@ class SMEFT(object):
             raise Exception("You have to specify the initial scale first.")
         if self.scale_high is None:
             raise Exception("You have to specify the high scale first.")
+
+    def rotate_defaultbasis(self, C):
+        """Rotate all parameters to the basis where the running down-type quark
+        and charged lepton mass matrices are diagonal and where the running
+        up-type quark mass matrix has the form V.S, with V unitary and S real
+        diagonal."""
+        v = sqrt(2*C['m2'].real/C['Lambda'].real)
+        Mep = v/sqrt(2) * (C['Ge'] - C['ephi'] * v**2/2)
+        Mup = v/sqrt(2) * (C['Gu'] - C['uphi'] * v**2/2)
+        Mdp = v/sqrt(2) * (C['Gd'] - C['dphi'] * v**2/2)
+        UeL, Me, UeR = definitions.msvd(Mep)
+        UuL, Mu, UuR = definitions.msvd(Mup)
+        UdL, Md, UdR = definitions.msvd(Mdp)
+        return definitions.flavor_rotation(C, Uq=UdL, Uu=UuR, Ud=UdR, Ul=UeL, Ue=UeR)

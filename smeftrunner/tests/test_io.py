@@ -46,7 +46,7 @@ class TestIO(unittest.TestCase):
             npt.assert_array_almost_equal(C_out[k].real, smeft.C_in[k].real, err_msg="Failed for {}".format(k))
 
     def test_arrays2wcxf(self):
-        """Test the functions needed for WCxf IO.""
+        """Test the functions needed for WCxf IO."""
         wcout = pkgutil.get_data('smeftrunner', 'tests/data/Output_SMEFTrunner.dat').decode('utf-8')
         smeft = SMEFT()
         smeft.load_initial((wcout,))

@@ -44,6 +44,12 @@ class SMEFT(object):
         C = definitions.symmetrize(C)
         self.C_in = C
 
+    def load_wcxf(self, stream):
+        wc = wcxf.WC.load(stream)
+        C = io.wcxf2arrays(wc.dict)
+        C = definitions.symmetrize(C)
+        self.C_in.update(C)
+
     def dump(self, C_out, scale_out=None, stream=None, fmt='lha', skip_redundant=True):
         """Return a string representation of the parameters and Wilson
         coefficients `C_out` in DSixTools output format. If `stream` is

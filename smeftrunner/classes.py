@@ -45,7 +45,18 @@ class SMEFT(object):
         self.C_in = C
 
     def load_wcxf(self, stream):
+        """Load the initial values for Wilson coefficients from
+        a file-like object or a string in WCxf format.
+
+        Note that Standard Model parameters have to be provided separately
+        and are assumed to be in the weak basis used for the Warsaw basis as
+        defined in WCxf, i.e. in the basis where the down-type and charged
+        lepton mass matrices are diagonal."""
         wc = wcxf.WC.load(stream)
+        if wc.eft != 'SMEFT':
+            raise ValueError("Wilson coefficient file uses wrong EFT.")
+        if wc.basis != 'Warsaw':
+            raise ValueError("Wilson coefficient file uses wrong basis.")
         C = io.wcxf2arrays(wc.dict)
         C = definitions.symmetrize(C)
         self.C_in.update(C)
@@ -68,7 +79,15 @@ class SMEFT(object):
         return pylha.dump({'BLOCK': C}, fmt=fmt, stream=stream)
 
     def dump_wcxf(self, C_out, scale_out, fmt='yaml', stream=None, **kwargs):
-        d = io.arrays2wcxf(C_out)
+        """Return a string representation of the Wilson coefficients `C_out`
+        in WCxf format. If `stream` is specified, export it to a file.
+        `fmt` defaults to `yaml`, but can also be `json`.
+
+        Note that the Wilson coefficients are rotated into the Warsaw basis
+        as defined in WCxf, i.e. to the basis where the down-type and charged
+        lepton mass matrices are diagonal."""
+        C = self.rotate_defaultbasis(C_out)
+        d = io.arrays2wcxf(C)
         basis = wcxf.Basis['SMEFT', 'Warsaw']
         d = {k: v for k, v in d.items() if k in basis.all_wcs and v != 0}
         d = wcxf.WC.dict2values(d)

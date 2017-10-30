@@ -4,6 +4,7 @@ from . import rge
 from . import io
 from . import definitions
 import pylha
+import wcxf
 from collections import OrderedDict
 from math import sqrt
 import ckmutil.phases, ckmutil.diag
@@ -59,6 +60,14 @@ class SMEFT(object):
         wc = io.wc_dict2lha(C_out, skip_redundant=skip_redundant)['BLOCK']
         C.update(wc)
         return pylha.dump({'BLOCK': C}, fmt=fmt, stream=stream)
+
+    def dump_wcxf(self, C_out, scale_out, fmt='yaml', stream=None, **kwargs):
+        d = io.arrays2wcxf(C_out)
+        basis = wcxf.Basis['SMEFT', 'Warsaw']
+        d = {k: v for k, v in d.items() if k in basis.all_wcs and v != 0}
+        d = wcxf.WC.dict2values(d)
+        wc = wcxf.WC('SMEFT', 'Warsaw', scale_out, d)
+        return wc.dump(fmt=fmt, **kwargs)
 
     def rgevolve(self, scale_out, **kwargs):
         """Solve the SMEFT RGEs from the initial scale to `scale_out`.

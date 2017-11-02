@@ -99,9 +99,9 @@ class SMEFT(object):
         up-type quark mass matrix has the form V.S, with V unitary and S real
         diagonal."""
         v = sqrt(2*C['m2'].real/C['Lambda'].real)
-        Mep = v/sqrt(2) * (C['Ge'] - C['ephi'] * v**2/2)
-        Mup = v/sqrt(2) * (C['Gu'] - C['uphi'] * v**2/2)
-        Mdp = v/sqrt(2) * (C['Gd'] - C['dphi'] * v**2/2)
+        Mep = v/sqrt(2) * (C['Ge'] - C['ephi'] * v**2/self.scale_high**2/2)
+        Mup = v/sqrt(2) * (C['Gu'] - C['uphi'] * v**2/self.scale_high**2/2)
+        Mdp = v/sqrt(2) * (C['Gd'] - C['dphi'] * v**2/self.scale_high**2/2)
         UeL, Me, UeR = definitions.msvd(Mep)
         UuL, Mu, UuR = definitions.msvd(Mup)
         UdL, Md, UdR = definitions.msvd(Mdp)

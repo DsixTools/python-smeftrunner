@@ -58,6 +58,14 @@ class SMEFT(object):
         if wc.basis != 'Warsaw':
             raise ValueError("Wilson coefficient file uses wrong basis.")
         C = io.wcxf2arrays(wc.dict)
+        keys_dim5 = ['llphiphi']
+        keys_dim6 = list(set(definitions.WC_keys_0f + definitions.WC_keys_2f + definitions.WC_keys_4f) - set(keys_dim5))
+        for k in keys_dim5:
+            if k in C:
+                C[k] = C[k]*self.scale_high
+        for k in keys_dim6:
+            if k in C:
+                C[k] = C[k]*self.scale_high**2
         C = definitions.symmetrize(C)
         self.C_in.update(C)
 
@@ -90,6 +98,14 @@ class SMEFT(object):
         d = io.arrays2wcxf(C)
         basis = wcxf.Basis['SMEFT', 'Warsaw']
         d = {k: v for k, v in d.items() if k in basis.all_wcs and v != 0}
+        keys_dim5 = ['llphiphi']
+        keys_dim6 = list(set(definitions.WC_keys_0f + definitions.WC_keys_2f + definitions.WC_keys_4f) - set(keys_dim5))
+        for k in d:
+            if k.split('_')[0] in keys_dim5:
+                d[k] = d[k]/self.scale_high
+        for k in d:
+            if k.split('_')[0] in keys_dim6:
+                d[k] = d[k]/self.scale_high**2
         d = wcxf.WC.dict2values(d)
         wc = wcxf.WC('SMEFT', 'Warsaw', scale_out, d)
         return wc.dump(fmt=fmt, **kwargs)

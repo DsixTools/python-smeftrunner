@@ -105,4 +105,5 @@ class SMEFT(object):
         UeL, Me, UeR = definitions.msvd(Mep)
         UuL, Mu, UuR = definitions.msvd(Mup)
         UdL, Md, UdR = definitions.msvd(Mdp)
+        UuL, UdL, UuR, UdR = definitions.rephase_standard(UuL, UdL, UuR, UdR)
         return definitions.flavor_rotation(C, Uq=UdL, Uu=UuR, Ud=UdR, Ul=UeL, Ue=UeR)

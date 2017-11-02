@@ -1,6 +1,7 @@
 """Definitions of auxiliary objects and operator properties."""
 
 import numpy as np
+from cmath import phase, exp
 
 I3 = np.identity(3)
 
@@ -1742,6 +1743,33 @@ def msvd(m):
 
 def argdet(U):
     return np.angle(np.linalg.det(U))
+
+def mixing_phases(U):
+    """Return the CP phases of the CKM or PMNS matrix
+    in standard parametrization, starting from a matrix with arbitrary phase
+    convention."""
+    f = {}
+    # standard phase
+    if U[1,0]*U[1,2].conj() == 0:
+        f['delta'] = 0
+    else:
+        f['delta'] = phase(-U[0,0]*U[0,2].conj()/(U[1,0]*U[1,2].conj()))
+    # Majorana phases
+    f['delta1']  = phase(exp(1j*f['delta']) * U[0, 2])
+    f['delta2']  = phase(U[1, 2])
+    f['delta3']  = phase(U[2, 2])
+    f['phi1'] = 2*phase(exp(1j*f['delta1']) * U[0, 0].conj())
+    f['phi2'] = 2*phase(exp(1j*f['delta1']) * U[0, 1].conj())
+    return f
+
+def rephase_standard(UuL, UdL, UuR, UdR):
+    """Function to rephase the fermionic rotation matrices in order to
+    obtain the CKM and PMNS matrices in standard parametrization"""
+    K = UuL.conj().T @ UdL
+    f = mixing_phases(K)
+    Fdelta = np.diag(np.exp([1j*f['delta1'], 1j*f['delta2'], 1j*f['delta3']]))
+    Fphi = np.diag(np.exp([-1j*f['phi1']/2., -1j*f['phi2']/2., 0]))
+    return UuL @ Fdelta, UdL @ Fphi.conj(), UuR @ Fdelta, UdR @ Fphi.conj()
 
 def flavor_rotation(C_in, Uq, Uu, Ud, Ul, Ue):
     """Gauge-invariant $U(3)^5$ flavor rotation of all Wilson coefficients and

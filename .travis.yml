@@ -1,12 +1,13 @@
 language: python
 python:
   - "3.5"
+  - "3.6"
 
 notifications:
   email: false
 
 install:
-  - pip install smeftrunner
+  - pip install .
   - pip install coveralls
 
 script: nosetests --with-coverage --cover-package=smeftrunner

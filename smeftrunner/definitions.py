@@ -1728,65 +1728,8 @@ vanishing_im_parts = {'G': [],
   (0, 0, 1, 1),
   (0, 0, 2, 2)]}
 
-def msvd(m):
-  """Modified singular value decomposition.
-
-  Returns U, S, V where Udagger M V = diag(S) and the singular values
-  are sorted in ascending order (small to large).
-  """
-  u, s, vdgr = np.linalg.svd(m)
-  order = s.argsort()
-  # reverse the n first columns of u
-  s = s[order]
-  u= u[:,order]
-  vdgr = vdgr[order]
-  return u, s, vdgr.conj().T
-
 def argdet(U):
     return np.angle(np.linalg.det(U))
-
-def mixing_phases(U):
-    """Return the angles and CP phases of the CKM or PMNS matrix
-    in standard parametrization, starting from a matrix with arbitrary phase
-    convention."""
-    f = {}
-    # angles
-    f['t13'] = asin(abs(U[0,2]))
-    if U[0,0] == 0:
-        f['t12'] = pi/2
-    else:
-        f['t12'] = atan(abs(U[0,1])/abs(U[0,0]))
-    if U[2,2] == 0:
-        f['t23'] = pi/2
-    else:
-        f['t23'] = atan(abs(U[1,2])/abs(U[2,2]))
-    s12 = sin(f['t12'])
-    c12 = cos(f['t12'])
-    s13 = sin(f['t13'])
-    c13 = cos(f['t13'])
-    s23 = sin(f['t23'])
-    c23 = cos(f['t23'])
-    # standard phase
-    if (s12*s23) == 0 or (c12*c13**2*c23*s13) == 0:
-        f['delta'] = 0
-    else:
-        f['delta'] = -phase((U[0,0].conj()*U[0,2]*U[2,0]*U[2,2].conj()/(c12*c13**2*c23*s13) + c12*c23*s13)/(s12*s23))
-    # Majorana phases
-    f['delta1']  = phase(exp(1j*f['delta']) * U[0, 2])
-    f['delta2']  = phase(U[1, 2])
-    f['delta3']  = phase(U[2, 2])
-    f['phi1'] = 2*phase(exp(1j*f['delta1']) * U[0, 0].conj())
-    f['phi2'] = 2*phase(exp(1j*f['delta1']) * U[0, 1].conj())
-    return f
-
-def rephase_standard(UuL, UdL, UuR, UdR):
-    """Function to rephase the fermionic rotation matrices in order to
-    obtain the CKM and PMNS matrices in standard parametrization"""
-    K = UuL.conj().T @ UdL
-    f = mixing_phases(K)
-    Fdelta = np.diag(np.exp([1j*f['delta1'], 1j*f['delta2'], 1j*f['delta3']]))
-    Fphi = np.diag(np.exp([-1j*f['phi1']/2., -1j*f['phi2']/2., 0]))
-    return UuL @ Fdelta, UdL @ Fphi.conj(), UuR @ Fdelta, UdR @ Fphi.conj()
 
 def flavor_rotation(C_in, Uq, Uu, Ud, Ul, Ue):
     """Gauge-invariant $U(3)^5$ flavor rotation of all Wilson coefficients and

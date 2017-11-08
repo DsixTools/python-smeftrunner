@@ -6,6 +6,7 @@ from . import definitions
 import pylha
 from collections import OrderedDict
 from math import sqrt
+import ckmutil.phases, ckmutil.diag
 
 class SMEFT(object):
     """Parameter point in the Standard Model Effective Field Theory."""
@@ -102,8 +103,8 @@ class SMEFT(object):
         Mep = v/sqrt(2) * (C['Ge'] - C['ephi'] * v**2/self.scale_high**2/2)
         Mup = v/sqrt(2) * (C['Gu'] - C['uphi'] * v**2/self.scale_high**2/2)
         Mdp = v/sqrt(2) * (C['Gd'] - C['dphi'] * v**2/self.scale_high**2/2)
-        UeL, Me, UeR = definitions.msvd(Mep)
-        UuL, Mu, UuR = definitions.msvd(Mup)
-        UdL, Md, UdR = definitions.msvd(Mdp)
-        UuL, UdL, UuR, UdR = definitions.rephase_standard(UuL, UdL, UuR, UdR)
+        UeL, Me, UeR = ckmutil.diag.msvd(Mep)
+        UuL, Mu, UuR = ckmutil.diag.msvd(Mup)
+        UdL, Md, UdR = ckmutil.diag.msvd(Mdp)
+        UuL, UdL, UuR, UdR = ckmutil.phases.rephase_standard(UuL, UdL, UuR, UdR)
         return definitions.flavor_rotation(C, Uq=UdL, Uu=UuR, Ud=UdR, Ul=UeL, Ue=UeR)

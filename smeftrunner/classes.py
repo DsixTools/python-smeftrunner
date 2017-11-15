@@ -98,13 +98,17 @@ class SMEFT(object):
         """Rotate all parameters to the basis where the running down-type quark
         and charged lepton mass matrices are diagonal and where the running
         up-type quark mass matrix has the form V.S, with V unitary and S real
-        diagonal."""
+        diagonal, and where the CKM and PMNS matrices have the standard
+        phase convention."""
         v = sqrt(2*C['m2'].real/C['Lambda'].real)
         Mep = v/sqrt(2) * (C['Ge'] - C['ephi'] * v**2/self.scale_high**2/2)
         Mup = v/sqrt(2) * (C['Gu'] - C['uphi'] * v**2/self.scale_high**2/2)
         Mdp = v/sqrt(2) * (C['Gd'] - C['dphi'] * v**2/self.scale_high**2/2)
+        Mnup = -v**2 * C['llphiphi']
         UeL, Me, UeR = ckmutil.diag.msvd(Mep)
         UuL, Mu, UuR = ckmutil.diag.msvd(Mup)
         UdL, Md, UdR = ckmutil.diag.msvd(Mdp)
+        Unu, Mnu = ckmutil.diag.mtakfac(Mnup)
         UuL, UdL, UuR, UdR = ckmutil.phases.rephase_standard(UuL, UdL, UuR, UdR)
+        Unu, UeL, UeR = ckmutil.phases.rephase_pmns_standard(Unu, UeL, UeR)
         return definitions.flavor_rotation(C, Uq=UdL, Uu=UuR, Ud=UdR, Ul=UeL, Ue=UeR)

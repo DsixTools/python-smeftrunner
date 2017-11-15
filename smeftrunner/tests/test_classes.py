@@ -34,7 +34,7 @@ class TestClasses(unittest.TestCase):
         C_new = C.copy()
         for k in ['Gu', 'Gd', 'Ge']:
             C_new[k] = np.diag(np.sort(np.abs(np.diag(C[k]))))
-        for k in ['uphi', 'dphi', 'ephi']:
+        for k in ['uphi', 'dphi', 'ephi', 'llphiphi']:
             C_new[k] = np.zeros((3,3))
         smeft_new = SMEFT()
         smeft_new.set_initial(C_new, scale_in=160, scale_high=1000)

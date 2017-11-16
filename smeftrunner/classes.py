@@ -44,19 +44,18 @@ class SMEFT(object):
         C = definitions.symmetrize(C)
         self.C_in = C
 
-    def load_wcxf(self, stream):
+    def set_initial_wcxf(self, wc):
         """Load the initial values for Wilson coefficients from
-        a file-like object or a string in WCxf format.
+        wcxf.WC instance.
 
         Note that Standard Model parameters have to be provided separately
         and are assumed to be in the weak basis used for the Warsaw basis as
         defined in WCxf, i.e. in the basis where the down-type and charged
         lepton mass matrices are diagonal."""
-        wc = wcxf.WC.load(stream)
         if wc.eft != 'SMEFT':
-            raise ValueError("Wilson coefficient file uses wrong EFT.")
+            raise ValueError("Wilson coefficients use wrong EFT.")
         if wc.basis != 'Warsaw':
-            raise ValueError("Wilson coefficient file uses wrong basis.")
+            raise ValueError("Wilson coefficients use wrong basis.")
         C = io.wcxf2arrays(wc.dict)
         keys_dim5 = ['llphiphi']
         keys_dim6 = list(set(definitions.WC_keys_0f + definitions.WC_keys_2f + definitions.WC_keys_4f) - set(keys_dim5))
@@ -68,6 +67,17 @@ class SMEFT(object):
                 C[k] = C[k]*self.scale_high**2
         C = definitions.symmetrize(C)
         self.C_in.update(C)
+
+    def load_wcxf(self, stream):
+        """Load the initial values for Wilson coefficients from
+        a file-like object or a string in WCxf format.
+
+        Note that Standard Model parameters have to be provided separately
+        and are assumed to be in the weak basis used for the Warsaw basis as
+        defined in WCxf, i.e. in the basis where the down-type and charged
+        lepton mass matrices are diagonal."""
+        wc = wcxf.WC.load(stream)
+        self.set_initial_wcxf(wc)
 
     def dump(self, C_out, scale_out=None, stream=None, fmt='lha', skip_redundant=True):
         """Return a string representation of the parameters and Wilson
@@ -86,10 +96,8 @@ class SMEFT(object):
         C.update(wc)
         return pylha.dump({'BLOCK': C}, fmt=fmt, stream=stream)
 
-    def dump_wcxf(self, C_out, scale_out, fmt='yaml', stream=None, **kwargs):
-        """Return a string representation of the Wilson coefficients `C_out`
-        in WCxf format. If `stream` is specified, export it to a file.
-        `fmt` defaults to `yaml`, but can also be `json`.
+    def get_wcxf(self, C_out, scale_out):
+        """Return the Wilson coefficients `C_out` as a wcxf.WC instance.
 
         Note that the Wilson coefficients are rotated into the Warsaw basis
         as defined in WCxf, i.e. to the basis where the down-type and charged
@@ -99,15 +107,27 @@ class SMEFT(object):
         basis = wcxf.Basis['SMEFT', 'Warsaw']
         d = {k: v for k, v in d.items() if k in basis.all_wcs and v != 0}
         keys_dim5 = ['llphiphi']
-        keys_dim6 = list(set(definitions.WC_keys_0f + definitions.WC_keys_2f + definitions.WC_keys_4f) - set(keys_dim5))
+        keys_dim6 = list(set(definitions.WC_keys_0f + definitions.WC_keys_2f
+                             + definitions.WC_keys_4f) - set(keys_dim5))
         for k in d:
             if k.split('_')[0] in keys_dim5:
-                d[k] = d[k]/self.scale_high
+                d[k] = d[k] / self.scale_high
         for k in d:
             if k.split('_')[0] in keys_dim6:
-                d[k] = d[k]/self.scale_high**2
+                d[k] = d[k] / self.scale_high**2
         d = wcxf.WC.dict2values(d)
         wc = wcxf.WC('SMEFT', 'Warsaw', scale_out, d)
+        return wc
+
+    def dump_wcxf(self, C_out, scale_out, fmt='yaml', stream=None, **kwargs):
+        """Return a string representation of the Wilson coefficients `C_out`
+        in WCxf format. If `stream` is specified, export it to a file.
+        `fmt` defaults to `yaml`, but can also be `json`.
+
+        Note that the Wilson coefficients are rotated into the Warsaw basis
+        as defined in WCxf, i.e. to the basis where the down-type and charged
+        lepton mass matrices are diagonal."""
+        wc = self.get_wcxf(C_out, scale_out)
         return wc.dump(fmt=fmt, **kwargs)
 
     def rgevolve(self, scale_out, **kwargs):

@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='smeftrunner',
-      version='1.9',
+      version='1.9.1',
       author='Xuanyou Pan, David M. Straub',
       author_email='xuanyou.pan@tum.de, david.straub@tum.de',
       url='https://github.com/DsixTools/python-smeftrunner',

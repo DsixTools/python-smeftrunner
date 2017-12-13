@@ -18,41 +18,6 @@ def load(stream, fmt='lha'):
     elif fmt == 'yaml':
         return yaml.load(stream)
 
-def arrays2wcxf(C):
-    """Convert a dictionary with Wilson coefficient names as keys and
-    numbers or numpy arrays as values to a dictionary with a Wilson coefficient
-    name followed by underscore and numeric indices as keys and numbers as
-    values. This is needed for the output in WCxf format."""
-    d = {}
-    for k, v in C.items():
-        if np.shape(v) == ():
-            d[k] = v
-        else:
-            ind = np.indices(v.shape).reshape(v.ndim, v.size).T
-            for i in ind:
-                name = k + '_' + ''.join([str(j+1) for j in i])
-                d[name] = v[tuple(i)]
-    return d
-
-def wcxf2arrays(d):
-    """Convert a dictionary dictionary with a Wilson coefficient
-    name followed by underscore and numeric indices as keys and numbers as
-    values to a dictionary with Wilson coefficient names as keys and
-    numbers or numpy arrays as values. This is needed for the parsing
-    of input in WCxf format."""
-    C = {}
-    for k, v in d.items():
-        name = k.split('_')[0]
-        s = definitions.C_keys_shape[name]
-        if s == 1:
-            C[k] = v
-        else:
-            ind = k.split('_')[-1]
-            if name not in C:
-                C[name] = np.zeros(s, dtype=complex)
-            C[name][tuple([int(i)-1 for i in ind])] = v
-    return C
-
 def lha2matrix(values, shape):
     """Return a matrix given a list of values of the form
     [[1, 1, float], [1, 2, float], ...]

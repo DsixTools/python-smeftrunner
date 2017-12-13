@@ -56,7 +56,7 @@ class SMEFT(object):
             raise ValueError("Wilson coefficients use wrong EFT.")
         if wc.basis != 'Warsaw':
             raise ValueError("Wilson coefficients use wrong basis.")
-        C = io.wcxf2arrays(wc.dict)
+        C = wcxf.translators.smeft.wcxf2arrays(wc.dict)
         keys_dim5 = ['llphiphi']
         keys_dim6 = list(set(definitions.WC_keys_0f + definitions.WC_keys_2f + definitions.WC_keys_4f) - set(keys_dim5))
         for k in keys_dim5:
@@ -103,7 +103,7 @@ class SMEFT(object):
         as defined in WCxf, i.e. to the basis where the down-type and charged
         lepton mass matrices are diagonal."""
         C = self.rotate_defaultbasis(C_out)
-        d = io.arrays2wcxf(C)
+        d = wcxf.translators.smeft.arrays2wcxf(C)
         basis = wcxf.Basis['SMEFT', 'Warsaw']
         d = {k: v for k, v in d.items() if k in basis.all_wcs and v != 0}
         keys_dim5 = ['llphiphi']
@@ -128,7 +128,7 @@ class SMEFT(object):
         as defined in WCxf, i.e. to the basis where the down-type and charged
         lepton mass matrices are diagonal."""
         wc = self.get_wcxf(C_out, scale_out)
-        return wc.dump(fmt=fmt, **kwargs)
+        return wc.dump(fmt=fmt, stream=stream, **kwargs)
 
     def rgevolve(self, scale_out, **kwargs):
         """Solve the SMEFT RGEs from the initial scale to `scale_out`.

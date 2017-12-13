@@ -46,17 +46,6 @@ class TestIO(unittest.TestCase):
         for k in C_out:
             npt.assert_array_almost_equal(C_out[k].real, smeft.C_in[k].real, err_msg="Failed for {}".format(k))
 
-    def test_arrays2wcxf(self):
-        """Test the functions needed for WCxf IO."""
-        wcout = pkgutil.get_data('smeftrunner', 'tests/data/Output_SMEFTrunner.dat').decode('utf-8')
-        smeft = SMEFT()
-        smeft.load_initial((wcout,))
-        d_wcxf = io.arrays2wcxf(smeft.C_in)
-        C_out = io.wcxf2arrays(d_wcxf)
-        C_out = definitions.symmetrize(C_out)
-        for k, v in smeft.C_in.items():
-            npt.assert_array_equal(v, C_out[k],
-                                   err_msg="Arrays are not equal for {}".format(k))
 
     def test_wcxf(self):
         # load example output file with SM par & WCs

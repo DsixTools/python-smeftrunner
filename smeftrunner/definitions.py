@@ -1,4 +1,4 @@
-"""Definitions of auxiliary objects and operator properties."""
+'Ge''Ge'"""Definitions of auxiliary objects and operator properties."""
 
 import numpy as np
 from cmath import phase, exp
@@ -1731,25 +1731,32 @@ vanishing_im_parts = {'G': [],
 def argdet(U):
     return np.angle(np.linalg.det(U))
 
-def flavor_rotation(C_in, Uq, Uu, Ud, Ul, Ue):
+def flavor_rotation(C_in, Uq, Uu, Ud, Ul, Ue, sm_parameters=True):
     """Gauge-invariant $U(3)^5$ flavor rotation of all Wilson coefficients and
     SM parameters."""
     C = {}
-    # shift of theta terms, see 0907.4763
-    C['Thetas'] = C_in['Thetas'] - 2*argdet(Uq) + argdet(Uu) + argdet(Ud)
-    C['Theta'] = C_in['Theta'] - 3*argdet(Uq) - argdet(Ul)
-    C['Thetap'] = ( C_in['Thetap'] - (1/6)*argdet(Uq) + (4/3)*argdet(Uu) + (1/3)*argdet(Ud)
-                                   - (1/2)*argdet(Ul) + argdet(Ue))
-    # nothing to do for purely bosonic operators and bosonic SM parameters
-    for k in WC_keys_0f + ['g', 'gp', 'gs', 'Lambda', 'm2']:
+    if sm_parameters:
+        # shift of theta terms, see 0907.4763
+        C['Thetas'] = C_in['Thetas'] - 2*argdet(Uq) + argdet(Uu) + argdet(Ud)
+        C['Theta'] = C_in['Theta'] - 3*argdet(Uq) - argdet(Ul)
+        C['Thetap'] = ( C_in['Thetap'] - (1/6)*argdet(Uq) + (4/3)*argdet(Uu) + (1/3)*argdet(Ud)
+                                       - (1/2)*argdet(Ul) + argdet(Ue))
+        # nothing to do for scalar SM parameters
+        for k in ['g', 'gp', 'gs', 'Lambda', 'm2']:
+            C[k] = C_in[k]
+        C['Ge'] = Ul.conj().T @ C_in['Ge'] @ Ue
+        C['Gu'] = Uq.conj().T @ C_in['Gu'] @ Uu
+        C['Gd'] = Uq.conj().T @ C_in['Gd'] @ Ud
+    # nothing to do for purely bosonic operators
+    for k in WC_keys_0f:
         C[k] = C_in[k]
     # see 1704.03888 table 4 (but staying SU(2) invariant here)
     # LR
-    for k in ['ephi', 'eW', 'eB', 'Ge']:
+    for k in ['ephi', 'eW', 'eB']:
         C[k] = Ul.conj().T @ C_in[k] @ Ue
-    for k in ['uphi', 'uW', 'uB', 'uG', 'Gu']:
+    for k in ['uphi', 'uW', 'uB', 'uG']:
         C[k] = Uq.conj().T @ C_in[k] @ Uu
-    for k in ['dphi', 'dW', 'dB', 'dG', 'Gd']:
+    for k in ['dphi', 'dW', 'dB', 'dG']:
         C[k] = Uq.conj().T @ C_in[k] @ Ud
     # LL
     for k in ['phil1', 'phil3']:

@@ -4,7 +4,6 @@ from . import rge
 from . import io
 from . import definitions
 import pylha
-import wcxf
 from collections import OrderedDict
 from math import sqrt
 import ckmutil.phases, ckmutil.diag
@@ -52,6 +51,7 @@ class SMEFT(object):
         and are assumed to be in the weak basis used for the Warsaw basis as
         defined in WCxf, i.e. in the basis where the down-type and charged
         lepton mass matrices are diagonal."""
+        import wcxf
         if wc.eft != 'SMEFT':
             raise ValueError("Wilson coefficients use wrong EFT.")
         if wc.basis != 'Warsaw':
@@ -76,6 +76,7 @@ class SMEFT(object):
         and are assumed to be in the weak basis used for the Warsaw basis as
         defined in WCxf, i.e. in the basis where the down-type and charged
         lepton mass matrices are diagonal."""
+        import wcxf
         wc = wcxf.WC.load(stream)
         self.set_initial_wcxf(wc)
 
@@ -102,6 +103,7 @@ class SMEFT(object):
         Note that the Wilson coefficients are rotated into the Warsaw basis
         as defined in WCxf, i.e. to the basis where the down-type and charged
         lepton mass matrices are diagonal."""
+        import wcxf
         C = self.rotate_defaultbasis(C_out)
         d = wcxf.translators.smeft.arrays2wcxf(C)
         basis = wcxf.Basis['SMEFT', 'Warsaw']

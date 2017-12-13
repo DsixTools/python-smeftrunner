@@ -24,5 +24,6 @@ setup(name='smeftrunner',
             'smeftrunner-cli = smeftrunner.cli:main',
         ]
       },
-      install_requires=['scipy', 'numpy', 'pylha>=0.2', 'pyyaml', 'ckmutil>=0.3'],
+      install_requires=['scipy', 'numpy', 'pylha>=0.2', 'pyyaml',
+                        'ckmutil>=0.3', 'wcxf'],
     )

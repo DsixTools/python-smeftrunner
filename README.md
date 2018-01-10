@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/DsixTools/python-smeftrunner.svg?branch=master)](https://travis-ci.org/DsixTools/python-smeftrunner) [![Coverage Status](https://coveralls.io/repos/github/DsixTools/python-smeftrunner/badge.svg?branch=master)](https://coveralls.io/github/DsixTools/python-smeftrunner?branch=master)
+
 # python-smeftrunner
 
 A Python package for the renormalization group (RG) evolution in the Standard Model Effective Field Theory (SMEFT).

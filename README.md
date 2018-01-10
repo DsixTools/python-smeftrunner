@@ -12,9 +12,7 @@ The Python package was written by Xuanyou Pan and David Straub.
 
 ## Installation
 
-The package requires Python version 3.5 or above as well as `numpy` and `scipy`, which are best installed using the system's package manager or a Python distribution like [Anaconda](https://docs.continuum.io/anaconda/).
-
-With these prerequisites, the package can be installed simply with
+The package requires Python version 3.5 or above. It can be installed with
 
 ```bash
 python3 -m pip install smeftrunner

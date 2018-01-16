@@ -138,10 +138,10 @@ def beta(C, HIGHSCALE):
       - Gu @ C["phiud"] \
       - 2*(np.einsum("rpts,pt", C["qd1"], Gd) \
       + 4/3*np.einsum("rpts,pt", C["qd8"], Gd)) \
-      + np.einsum("ptsr,tp", np.conj(C["ledq"]), np.conj(Ge)) \
+      + np.einsum("ptsr,pt", np.conj(C["ledq"]), Ge) \
       + 3*np.einsum("ptrs,pt", C["quqd1"], np.conj(Gu)) \
-      + 1/2*(np.einsum("rpts,pt", C["quqd1"], np.conj(Gu)) \
-      + 4/3*np.einsum("rpts,pt", C["quqd8"], np.conj(Gu))))
+      + 1/2*(np.einsum("rpts,tp", C["quqd1"], np.conj(Gu)) \
+      + 4/3*np.einsum("rpts,tp", C["quqd8"], np.conj(Gu))))
 
     Beta["Ge"] = 3/2*Ge @ Ge.conj().T @ Ge + (GammaH \
       - 3/4*(3*g**2 + 5*gp**2))*Ge + 2*m2/HIGHSCALE**2*(3*C["ephi"] \
@@ -408,7 +408,7 @@ def beta(C, HIGHSCALE):
       - 2*(np.einsum("tsrp,pt", C["quqd1"], Gd.conj().T @ Gd @ Gd.conj().T) \
       + 4/3*np.einsum("tsrp,pt", C["quqd8"], Gd.conj().T @ Gd @ Gd.conj().T)) \
       - 12*np.einsum("rstp,pt", C["quqd1"], Gd.conj().T @ Gd @ Gd.conj().T) \
-      + 4*np.einsum("tprs,pt", C["lequ1"], Ge @ Ge.conj().T @ Ge) \
+      + 4*np.einsum("tprs,pt", C["lequ1"], Ge.conj().T @ Ge @ Ge.conj().T) \
       + 4*C["uphi"] @ Gu.conj().T @ Gu \
       + 5*Gu @ Gu.conj().T @ C["uphi"] \
       - 2*Gd @ C["dphi"].conj().T @ Gu \
@@ -461,7 +461,7 @@ def beta(C, HIGHSCALE):
       + C["phiD"]*Gd \
       - 4*np.einsum("rpts,pt", C["qd1"], Gd) \
       - 16/3*np.einsum("rpts,pt", C["qd8"], Gd) \
-      + 2*np.einsum("ptsr,tp", np.conj(C["ledq"]), np.conj(Ge)) \
+      + 2*np.einsum("ptsr,pt", np.conj(C["ledq"]), Ge) \
       + 6*np.einsum("ptrs,pt", C["quqd1"], np.conj(Gu)) \
       + np.einsum("rtps,pt", C["quqd1"], np.conj(Gu)) \
       + 4/3*np.einsum("rtps,pt", C["quqd8"], np.conj(Gu))) \
@@ -522,7 +522,7 @@ def beta(C, HIGHSCALE):
       - 2*C["phiBox"]*Ge \
       + C["phiD"]*Ge \
       - 4*np.einsum("rpts,pt", C["le"], Ge) \
-      + 6*np.einsum("rspt,pt", C["ledq"], Gd) \
+      + 6*np.einsum("rspt,tp", C["ledq"], Gd) \
       - 6*np.einsum("rspt,pt", C["lequ1"], np.conj(Gu))) \
       + 2*(Eta1 \
       + Eta2 \
@@ -577,7 +577,7 @@ def beta(C, HIGHSCALE):
       + 10/3*gp*gs*C["uB"] \
       - gs*(4*(C["phiG"] \
       + 1j*C["phiGtilde"]) \
-      - 9*gs*(C["G"] \
+      + 9*gs*(C["G"] \
       + 1j*C["Gtilde"]))*Gu \
       - gs*(np.einsum("psrt,pt", C["quqd1"], np.conj(Gd)) \
       - 1/6*np.einsum("psrt,pt", C["quqd8"], np.conj(Gd))) \
@@ -601,7 +601,7 @@ def beta(C, HIGHSCALE):
       + 1j*C["phiWtildeB"]))*Gu \
       + g/4*(np.einsum("psrt,pt", C["quqd1"], np.conj(Gd)) \
       + 4/3*np.einsum("psrt,pt", C["quqd8"], np.conj(Gd))) \
-      - 2*g*np.einsum("ptrs,tp", C["lequ3"], np.conj(Ge)) \
+      - 2*g*np.einsum("ptrs,pt", C["lequ3"], np.conj(Ge)) \
       + 2*Gd @ Gd.conj().T @ C["uW"] \
       - C["dW"] @ Gd.conj().T @ Gu \
       + C["uW"] @ Gu.conj().T @ Gu \
@@ -621,7 +621,7 @@ def beta(C, HIGHSCALE):
       + 1j*C["phiBtilde"]))*Gu \
       + gp/12*(np.einsum("psrt,pt", C["quqd1"], np.conj(Gd)) \
       + 4/3*np.einsum("psrt,pt", C["quqd8"], np.conj(Gd))) \
-      - 6*gp*np.einsum("ptrs,tp", C["lequ3"], np.conj(Ge)) \
+      - 6*gp*np.einsum("ptrs,pt", C["lequ3"], np.conj(Ge)) \
       + 2*Gu @ Gu.conj().T @ C["uB"] \
       - 2*Gd @ Gd.conj().T @ C["uB"] \
       - C["dB"] @ Gd.conj().T @ Gu \
@@ -638,7 +638,7 @@ def beta(C, HIGHSCALE):
       - 2/3*gp*gs*C["dB"] \
       - gs*(4*(C["phiG"] \
       + 1j*C["phiGtilde"]) \
-      - 9*gs*(C["G"] \
+      + 9*gs*(C["G"] \
       + 1j*C["Gtilde"]))*Gd \
       - gs*(np.einsum("rtps,pt", C["quqd1"], np.conj(Gu)) \
       - 1/6*np.einsum("rtps,pt", C["quqd8"], np.conj(Gu))) \
@@ -1610,7 +1610,7 @@ def beta(C, HIGHSCALE):
     Beta["ledq"] = -(8/3*gp**2 \
       + 8*gs**2)*np.einsum("prst", C["ledq"]) \
       - 2*np.einsum("ts,pr", np.conj(Gd), Xie) \
-      - 2*np.einsum("rp,st", Ge, np.conj(Xid)) \
+      - 2*np.einsum("pr,ts", Ge, np.conj(Xid)) \
       + 2*np.einsum("pv,tw,vrsw", Ge, np.conj(Gd), C["ed"]) \
       - 2*np.einsum("vr,tw,pvsw", Ge, np.conj(Gd), C["ld"]) \
       + 2*np.einsum("vr,ws,pvwt", Ge, np.conj(Gd), C["lq1"]) \
@@ -1618,9 +1618,9 @@ def beta(C, HIGHSCALE):
       - 2*np.einsum("pw,vs,vtwr", Ge, np.conj(Gd), C["qe"]) \
       + 2*np.einsum("vs,tw,prvw", np.conj(Gd), np.conj(Gu), C["lequ1"]) \
       + np.einsum("pv,vrst", Gammal, C["ledq"]) \
-      + np.einsum("sv,prvt", Gammaq, C["ledq"]) \
+      + np.einsum("sv,prvt", Gammad, C["ledq"]) \
       + np.einsum("pvst,vr", C["ledq"], Gammae) \
-      + np.einsum("prsv,vt", C["ledq"], Gammad)
+      + np.einsum("prsv,vt", C["ledq"], Gammaq)
 
     Beta["quqd1"] = 10/3*gp*np.einsum("st,pr", C["dB"], Gu) \
       - 6*g*np.einsum("st,pr", C["dW"], Gu) \

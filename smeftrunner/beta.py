@@ -577,7 +577,7 @@ def beta(C, HIGHSCALE):
       + 10/3*gp*gs*C["uB"] \
       - gs*(4*(C["phiG"] \
       + 1j*C["phiGtilde"]) \
-      + 9*gs*(C["G"] \
+      - 9*gs*(C["G"] \
       + 1j*C["Gtilde"]))*Gu \
       - gs*(np.einsum("psrt,pt", C["quqd1"], np.conj(Gd)) \
       - 1/6*np.einsum("psrt,pt", C["quqd8"], np.conj(Gd))) \
@@ -638,7 +638,7 @@ def beta(C, HIGHSCALE):
       - 2/3*gp*gs*C["dB"] \
       - gs*(4*(C["phiG"] \
       + 1j*C["phiGtilde"]) \
-      + 9*gs*(C["G"] \
+      - 9*gs*(C["G"] \
       + 1j*C["Gtilde"]))*Gd \
       - gs*(np.einsum("rtps,pt", C["quqd1"], np.conj(Gu)) \
       - 1/6*np.einsum("rtps,pt", C["quqd8"], np.conj(Gu))) \

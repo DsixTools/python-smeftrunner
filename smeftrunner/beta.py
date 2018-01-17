@@ -135,7 +135,7 @@ def beta(C, HIGHSCALE):
       + C["phiq1"].conj().T @ Gd \
       + 3*C["phiq3"].conj().T @ Gd \
       - Gd @ C["phid"].conj().T \
-      - Gu.conj() @ C["phiud"] \
+      - Gu @ C["phiud"] \
       - 2*(np.einsum("rpts,pt", C["qd1"], Gd) \
       + 4/3*np.einsum("rpts,pt", C["qd8"], Gd)) \
       + np.einsum("ptsr,pt", np.conj(C["ledq"]), Ge) \

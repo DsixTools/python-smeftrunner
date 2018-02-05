@@ -66,7 +66,11 @@ class SMEFT(object):
             if k in C:
                 C[k] = C[k]*self.scale_high**2
         C = definitions.symmetrize(C)
-        self.C_in.update(C)
+        self.scale_in = wc.scale
+        if self.C_in is None:
+            self.C_in = C
+        else:
+            self.C_in.update(C)
 
     def load_wcxf(self, stream):
         """Load the initial values for Wilson coefficients from

@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='smeftrunner',
-      version='2.0',
+      version='2.1',
       author='Xuanyou Pan, David M. Straub',
       author_email='xuanyou.pan@tum.de, david.straub@tum.de',
       url='https://github.com/DsixTools/python-smeftrunner',
@@ -24,6 +24,6 @@ setup(name='smeftrunner',
             'smeftrunner-cli = smeftrunner.cli:main',
         ]
       },
-      install_requires=['scipy', 'numpy', 'pylha>=0.2', 'pyyaml',
+      install_requires=['scipy>=1.0', 'numpy', 'pylha>=0.2', 'pyyaml',
                         'ckmutil>=0.3', 'wcxf'],
     )

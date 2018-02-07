@@ -83,3 +83,13 @@ class TestBeta(unittest.TestCase):
         for n in C4:
             npt.assert_array_almost_equal((C_out[n]/C_out_ll[n]).real, np.ones((3,3,3,3)), decimal=1,
                 err_msg="failed for {}".format(n))
+
+    def test_sm(self):
+        beta_np = beta.beta(C,  HIGHSCALE)
+        beta_sm = beta.beta(C,  HIGHSCALE, newphys=False)
+        for k in definitions.C_keys:
+            if k in definitions.SM_keys:
+                npt.assert_array_equal(beta_np[k], beta_sm[k])
+            else:
+                self.assertEqual(np.asarray(beta_np[k]).shape, np.asarray(beta_sm[k]).shape)
+                self.assertEqual(np.count_nonzero(beta_sm[k]), 0)

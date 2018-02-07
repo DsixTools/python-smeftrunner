@@ -9,7 +9,7 @@ import ckmutil
 np.random.seed(110)
 
 
-def get_random_wc(eft, basis, cmax=1e-2):
+def get_random_wc(eft, basis, scale=160, cmax=1e-2):
     """Generate a random Wilson coefficient instance for a given basis."""
     basis_obj = wcxf.Basis[eft, basis]
     _wc = {}
@@ -18,7 +18,7 @@ def get_random_wc(eft, basis, cmax=1e-2):
             _wc[name] = cmax * np.random.rand()
             if 'real' not in d or not d['real']:
                 _wc[name] += 1j * cmax * np.random.rand()
-    return wcxf.WC(eft, basis, 160, wcxf.WC.dict2values(_wc))
+    return wcxf.WC(eft, basis, scale, wcxf.WC.dict2values(_wc))
 
 
 
@@ -71,8 +71,8 @@ class TestMh2v(unittest.TestCase):
         C = {k: np.random.rand() for k in ['phi', 'phiBox', 'phiD']}
         d = smpar.vMh2_to_m2Lambda(v, Mh2, C, scale_high)
         d2 = smpar.m2Lambda_to_vMh2(d['m2'], d['Lambda'], C, scale_high)
-        self.assertAlmostEqual(d2['v'], v)
-        self.assertAlmostEqual(d2['Mh2'], Mh2)
+        self.assertAlmostEqual(d2['v'], v, places=6)
+        self.assertAlmostEqual(d2['Mh2'], Mh2, places=6)
 
 class TestSMpar(unittest.TestCase):
     def test_smeftpar_small(self):
@@ -80,7 +80,7 @@ class TestSMpar(unittest.TestCase):
         smeft = SMEFT()
         smeft.scale_in = 160
         smeft.scale_high = 1e12
-        smeft.set_initial_wcxf(wc)
+        smeft.set_initial_wcxf(wc, get_smpar=False)
         with self.assertRaises(ValueError):
             smpar.smeftpar(smeft.scale_in, smeft.scale_high, smeft.C_in, 'flavio')
         CSM = smpar.smeftpar(smeft.scale_in, smeft.scale_high, smeft.C_in, 'Warsaw')
@@ -111,7 +111,7 @@ class TestSMpar(unittest.TestCase):
         smeft = SMEFT()
         smeft.scale_in = 160
         smeft.scale_high = 1e12
-        smeft.set_initial_wcxf(wc)
+        smeft.set_initial_wcxf(wc, get_smpar=False)
         CSM = smpar.smeftpar(smeft.scale_in, smeft.scale_high, smeft.C_in, 'Warsaw')
         Cboth = CSM.copy()
         Cboth.update(smeft.C_in)
@@ -127,7 +127,7 @@ class TestSMpar(unittest.TestCase):
         smeft = SMEFT()
         smeft.scale_in = 160
         smeft.scale_high = 500
-        smeft.set_initial_wcxf(wc)
+        smeft.set_initial_wcxf(wc, get_smpar=False)
         CSM = smpar.smeftpar(smeft.scale_in, smeft.scale_high, smeft.C_in, 'Warsaw')
         Cboth = CSM.copy()
         Cboth.update(smeft.C_in)
@@ -145,3 +145,16 @@ class TestSMpar(unittest.TestCase):
                 self.assertAlmostEqual(smpar.p[k]/Cback[k], 1,
                                        msg="Failed for {}".format(k),
                                        delta=1e-6)
+
+class TestGetSMpar(unittest.TestCase):
+    def test_wcxf_smpar(self):
+        wc = get_random_wc('SMEFT', 'Warsaw', 1e5, 1e-11)
+        smeft = SMEFT()
+        smeft.set_initial_wcxf(wc, get_smpar=True)
+        C_out = smeft.rgevolve(91.1876)
+        p_out = smpar.smpar(wc.scale, C_out)
+        for k in p_out:
+            if 'Theta' not in k:
+                self.assertAlmostEqual(p_out[k] / smpar.p[k], 1,
+                                       delta=0.05,
+                                       msg="Failed for {}".format(k))

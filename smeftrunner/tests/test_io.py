@@ -67,7 +67,7 @@ class TestIO(unittest.TestCase):
         C_ini = {k: v for k, v in smeft.C_in.items() if k in definitions.SM_keys}
         smeft2.set_initial(C_ini, scale_in=160, scale_high=10000)
         # now load back in the WCxf-YAML
-        smeft2.load_wcxf(wcyaml)
+        smeft2.load_wcxf(wcyaml, get_smpar=False)
         # now check that everything is equal to where we started from
         for k in smeft.C_in:
             if np.all(np.round(smeft.C_in[k], 6) == 0):

@@ -6,10 +6,8 @@ import scipy.optimize
 from cmath import phase
 
 
-# Default values for SM parameters
+# Default values for SM parameters: MSbar parameters at M_Z (except GF)
 p = {}
-p['m_W'] = 80.385
-p['m_Z'] = 91.1876
 p['GF'] = 1.1663787e-5
 p['alpha_e'] = 1 / 127.9
 p['alpha_s'] = 0.1185
@@ -17,16 +15,20 @@ p['Vus'] = 0.2243
 p['Vub'] = 3.62e-3
 p['Vcb'] = 4.221e-2
 p['gamma'] = 1.27
-p['m_e'] = 0.0005109989461
-p['m_mu'] = 0.1056583745
-p['m_tau'] = 1.77686
-p['m_h'] = 125
-p['m_u'] = 0.0022
-p['m_c'] = 1.28
-p['m_t'] = 173.1
-p['m_d'] = 0.0047
-p['m_s'] = 0.095
-p['m_b'] = 4.18
+p['m_e'] = 0.000511
+p['m_mu'] = 0.1057
+p['m_tau'] = 1.777
+p['m_u'] = 0.00127  # mu(2 GeV)=0.0022
+p['m_c'] = 0.635  # mc(mc)=1.28
+p['m_d'] = 0.00270  # md(2 GeV)=0.0047
+p['m_s'] = 0.0551  # ms(2 GeV)=0.095
+p['m_b'] = 2.85  # mb(mb)=4.18
+# MSbar running masses at MZ computed with "mr"
+# https://github.com/apik/mr, https://arxiv.org/abs/1601.08143
+p['m_t'] = 169.0
+p['m_W'] = 80.20
+p['m_Z'] = 91.46
+p['m_h'] = 130.6
 
 
 def m2Lambda_to_vMh2(m2, Lambda, C, scale_high):

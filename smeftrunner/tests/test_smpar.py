@@ -158,3 +158,9 @@ class TestGetSMpar(unittest.TestCase):
                 self.assertAlmostEqual(p_out[k] / smpar.p[k], 1,
                                        delta=0.05,
                                        msg="Failed for {}".format(k))
+
+    def test_wcxf_smpar_incomplete(self):
+        wc = wcxf.WC('SMEFT', 'Warsaw', 160, {'qd1_1111': {'Im': 1e-6}})
+        smeft = SMEFT()
+        smeft.set_initial_wcxf(wc, get_smpar=True)
+        smeft.rgevolve(91.1876)

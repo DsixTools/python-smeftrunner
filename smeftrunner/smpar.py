@@ -4,6 +4,7 @@ import ckmutil
 import ckmutil.ckm
 import scipy.optimize
 from cmath import phase
+import smeftrunner
 
 
 # Default values for SM parameters: MSbar parameters at M_Z (except GF)
@@ -86,6 +87,7 @@ def get_gpbar(ebar, gbar, v, C, scale_high):
 
 
 def smeftpar(scale, scale_high, C, basis):
+    # start with a zero dict and update it with the input values
     MW = p['m_W']
     # MZ = p['m_Z']
     GF = p['GF']

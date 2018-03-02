@@ -88,6 +88,13 @@ class SMEFT(object):
             if k in C:
                 C[k] = C[k]*self.scale_high**2
         C = definitions.symmetrize(C)
+        # fill in zeros for missing WCs
+        for k, s in definitions.C_keys_shape.items():
+            if k not in C and k not in definitions.SM_keys:
+                if s == 1:
+                    C[k] = 0
+                else:
+                    C[k] = np.zeros(s)
         if self.C_in is None:
             self.C_in = C
         else:

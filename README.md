@@ -1,4 +1,6 @@
-[![Build Status](https://travis-ci.org/DsixTools/python-smeftrunner.svg?branch=master)](https://travis-ci.org/DsixTools/python-smeftrunner) [![Coverage Status](https://coveralls.io/repos/github/DsixTools/python-smeftrunner/badge.svg?branch=master)](https://coveralls.io/github/DsixTools/python-smeftrunner?branch=master)
+**Note: this project has been merged into the [wilson](https://github.com/wilson-eft/wilson) package.**
+
+----
 
 # python-smeftrunner
 
